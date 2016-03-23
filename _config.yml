@@ -65,6 +65,11 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: light
 
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
 math:
   engine: 'mathjax'
   mathjax:

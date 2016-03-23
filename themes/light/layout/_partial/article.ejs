@@ -32,11 +32,11 @@
       <% } else { %>
         <%- partial('post/category') %>
         <%- partial('post/tag') %>
-        <%- partial('post/share') %>
+        <% if (ispost){ %>
+          <%- partial('post/share') %>
+        <% } %>
       <% } %>
       <div class="clearfix"></div>
     </footer>
   </div>
 </article>
-
-<%- partial('comment') %>
