@@ -3,9 +3,7 @@ menu:
   About: about
   Archives: archives
 
-
 widgets:
-- search
 - category
 - tag
 
