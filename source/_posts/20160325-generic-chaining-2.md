@@ -91,29 +91,31 @@ $\mathrm{diam}T = 0$ または (1) の積分が $+\infty$ のときは無意味�
 
 距離$d$および$X\_t$を等倍にスケールして、$\mathrm{diam}T < 1$としても問題が生じないのでそうする。
 
-また、とくに $T$ は全有界だが、$T$ 全体ではなく、稠密な加算集合 $T\_0$ の上で (2) を示すことにする（下の可測性の補足も参照）。任意の有限集合 $S \subset T$で (2) を示すことを目標にする。そうすれば、$S\_n \uparrow T\_0$ の極限をとれば単調収束定理より $T\_0$ でも成り立つ。
+また、とくに $T$ は全有界だが、$T$ 全体ではなく、稠密な加算集合 $T\_0$ の上で (2) を示すことにする（下の可測性の補足も参照）。そのためには、任意の有限集合 $S \subset T$で (2) を示せばよい。そうすれば、$S\_n \uparrow T\_0$ の極限をとれば単調収束定理より $T\_0$ でも成り立つ。
 
 ### 2. Chainの構成
 $S$ を固定する。$k\_1$ を十分大きくとって、$S$の2点どうしの距離で最も近いところより長さ $2^{-k\_1}$ が短くなるようにとれば、$B(t, 2^{-k\_1})$ は $S$ の点を高々1つまでしか含まない。
 代表点の集合 $T\_k$ を次のようにつくる。
 - $T\_{k\_1} = S$
-- $1 \leq k \leq k\_1$ に対して、$T\_k$ を最小$\epsilon$-netとする
+- $1 \leq k \leq k\_1$ に対して、$T\_k$ を最小$2^{-k}$-netとする
 - $T\_0 = \\{ t\_0 \\}$
+
 絵を描いてみた。
+
 {% asset_img "chaining_grid.png" "Grid" %}
 
-$\\{ t\_0 \\}$ の1点集合からはじまって、半径を半分ずつに縮めたnetをとっていく。$k$番目のレイヤーには$N(T, d, \epsilon)$個の点があって、最後の$k\_1$番目のレイヤーだけはそれぞれのグリッドに$S$の点が1個以下収まっている。
+$\\{ t\_0 \\}$ の1点集合からはじまって、半径を半分ずつに縮めたnetをとっていく。$k$番目のレイヤーには$N(T, d, 2^{-k})$個の点があって、最後の$k\_1$番目のレイヤーだけはそれぞれのグリッドに$S$の点が1個以下収まっている。
 絵心がないので「四角く」描いているけど、$T$ は有限次元でなくてもいいし、$B(t, \epsilon)$ たちはdisjointでもない。
 
 次に、各 $s \in S$ に対して、$T\_k$ への射影 $\pi\_k(s)$ をひとつ定める。
-基本的には"近いもの"を選ぶ。つまり、ある $t\_k \in T\_k$に対して $s \in B(t\_k, 2^{-k})$ であれば、$\pi\_k(s) = t\_k$ と定める。$T\_k$ は $2^{-k}$-netになっているはずだから1つ以上は存在するが、もし2つ以上該当する場合は適当に一方を選ぶ。
+基本的には、ひとつ上の階層の代表点のうち最も近いものに寄せていく。つまり、ある $t\_k \in T\_k$に対して $s \in B(t\_k, 2^{-k})$ であれば、$\pi\_k(s) = t\_k$ と定める。$T\_k$ は $2^{-k}$-netになっているはずだから、寄せるべき$T\_k$の点は1つ以上は存在するが、もし2つ以上該当する場合は適当に一方を選ぶ。
 ただし、$\pi\_k(s) = \pi\_k(s^\prime)$ ならば、$\pi\_{k-1}(s) = \pi\_{k-1}(s^\prime)$ となるようにする。
 
 $\pi\_k(s)$ の行き先をすべて図示してみると、下のようにツリー状になる。
 
 {% asset_img "chaining.png" "Chaining" %}
 
-2つの $s \neq s^\prime$　について、$\pi\_k(s) = \pi\_k(s^\prime)$ というのはチェインが「合流」するということだが、そこから先は終点の $t\_0$ に至るまでずっと同じチェインの上に乗っている。
+$s \in S = T\_{k\_1}$から出発して上に登っていく。2つの $s \neq s^\prime$　について、$\pi\_k(s) = \pi\_k(s^\prime)$ になるというのはそこでチェインが「合流」するということだが、そこから先は終点の $t\_0$ に至るまでずっと同じチェインの上に乗っている。
 
 ~~今後も個人的に使いそうなので図を描いてみたが、大変だった……~~
 
@@ -131,7 +133,7 @@ $$
 $$
 を意味する ($X(t) = X\_t$)。
 
-一方、ツリー状に配置したおかげで、第$k$層と$k-1$層を結ぶ青い線は高々 $|T\_k| = $N(T, d, 2^{-k})$ 種類しかない。したがって、最大不等式より
+一方、ツリー状に配置したおかげで、第$k$層と$k-1$層を結ぶ青い線は高々 $|T\_k| = N(T, d, 2^{-k})$ 種類しかない。したがって、最大不等式より
 
 $$
 \mathbb{E}\max\_{s \in S} |X(\pi\_k(s)) - X(\pi\_{k-1}(s))|　\leq 2^{-(k-1)} \sqrt{2 \log 2 N(T, d, 2^{-k})}
@@ -201,6 +203,6 @@ $$
 ### 参考文献
 
 [1] Giné and Nickl. Mathematical Foundations of Infinite-Dimensional Statistical Models, Cambridge University Press, 2015.
-[2] R. M. Dudley. Uniform Central Limit Theorems (2nd edition), Cambrige University Press, 2014.
-[3] M. Ledoux and Talagrand. Probability in Banach Spaces, Springer, 1991.
-[4] M. Talagrand. Upper and Lower Bounds for Stochastic Processes, Springer, 2014.
+[2] Dudley. Uniform Central Limit Theorems (2nd edition), Cambrige University Press, 2014.
+[3] Ledoux and Talagrand. Probability in Banach Spaces, Springer, 1991.
+[4] Talagrand. Upper and Lower Bounds for Stochastic Processes, Springer, 2014.
