@@ -18,6 +18,16 @@ hexo new <post_title>
 or just put a markdown text to `soure/_posts`.
 I like to use post titles like as "yyyy-mm-dd-title".
 
+If you want to generate a draft, execute
+```
+hexo new draft <draft_name>
+```
+
+A draft is ignored by `hexo generate`. To convert a draft into a publication-ready post, execute
+```
+hexo publish post <draft_name>
+```
+
 (2) Edit the text
 
 by markdown.
