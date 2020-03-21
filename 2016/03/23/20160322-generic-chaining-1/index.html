@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Generic Chaining (1) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="はじめに学習理論や機械学習周辺を勉強していると、しばしば「確率過程の最大値」というものが出てくる。確率過程といっても色々あるものの、主に興味があるのは経験過程とその極限として出てくるガウス過程の2つだ。これらは、「リスクの挙動が知りたい」「M推定量の一致性が知りたい」といった統計的なモチベーションに関係してくる。
+このノートでは、確率過程の最大値の測り方についての、比較的つっこんだ内容を数回に分けて書こうと思う。
+ノートの趣旨Generic chainingと呼ばれるものに関して知られている結果を、証明抜きで並べようと思う。
+Generic chainingとは何をするためのものか経験過程やガウス過程の最大値は、添え字の空間が大きすぎると暴れる。
+平均0の確率過程 $(X_t)$ があるとき、添え字の空間には $(X_t)$ の相関構造をもとに擬距離が入る。ところがその距離の意味で添え字の空間が大きすぎると、$\sup_t |X_t|$ は発散してしまう。大きさの測り方はいろいろあるのだが、基本的には全有界性のようなものがコントロールされていることが望ましい。例えば、カバリングナンバー ($\epsilon$ を固定したときの $\epsilon$-netの要素数の最小値) が大きすぎないことが条件になる。
+逆に、「添字空間の大きさを測る尺度」によって確率過程の最大値をタイトに評価できることが知られている。
+そこでようやく表題の概念が出てくる。ワンセンテンスで言えば、Generic chainingというのは、確率過程の最大値を添字空間の大きさを使って評価するやり方のなかで、とりわけ高級なものである。同目的のテクニックに連鎖 (chaining) という名前がついているものがまずあって、それをさらに一般化したものなのでこういう名前がついている。
+結論の一部を先取りすると、距離の入った添字空間 $(T, d)$ の複雑さの尺度を、次のような量で測る：$$\gamma_2(T, d) := \inf \sup_{t \in T} \sum_{n=0}^\infty 2^{n/2} d(t, T_n)$$$T_n$ というのは $T$ の「代表点の集合」で、基本的には $n=0,1,\ldots$ とともに要素数が増えていく。だんだん解像度を上げていく感じだ。$T_n$ 要素数の増え方にはある程度制限がかかっていて、$\inf$ はそのような $T_n$ の全体にわたってとる。このように定義した $\gamma_2$ という謎の量が、なぜかガウス過程のsupの性質をとてもよく捉えている。
+これがしかしどの程度重要な概念かというと、言ってしまえばマニアックな知識だ。機械学習の論文を読む人間の95%にとって必要にならない程度だと思う。それでも、例えば昨年 (2015年) のNIPSにもそれ自体をテーマにした論文が通っていたりして、やっている人はやっている。つまり、この知識が必要になる残りの5%とは、学習理論をやっている人間のことである。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Generic Chaining (1)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-23T11:39:00.000Z"><a href="/blog/2016/03/23/20160322-generic-chaining-1/">2016-03-23</a></time>
+      
+      
+  
+    <h1 class="title">Generic Chaining (1)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p>学習理論や機械学習周辺を勉強していると、しばしば「確率過程の最大値」というものが出てくる。確率過程といっても色々あるものの、主に興味があるのは<a href="https://en.wikipedia.org/wiki/Empirical_process" target="_blank" rel="noopener">経験過程</a>とその極限として出てくる<a href="https://en.wikipedia.org/wiki/Gaussian_process" target="_blank" rel="noopener">ガウス過程</a>の2つだ。これらは、「リスクの挙動が知りたい」「M推定量の一致性が知りたい」といった統計的なモチベーションに関係してくる。</p>
+<p>このノートでは、確率過程の最大値の測り方についての、比較的つっこんだ内容を数回に分けて書こうと思う。</p>
+<h2 id="ノートの趣旨"><a href="#ノートの趣旨" class="headerlink" title="ノートの趣旨"></a>ノートの趣旨</h2><p><strong>Generic chaining</strong>と呼ばれるものに関して知られている結果を、証明抜きで並べようと思う。</p>
+<h2 id="Generic-chainingとは何をするためのものか"><a href="#Generic-chainingとは何をするためのものか" class="headerlink" title="Generic chainingとは何をするためのものか"></a>Generic chainingとは何をするためのものか</h2><p>経験過程やガウス過程の最大値は、添え字の空間が大きすぎると暴れる。</p>
+<p>平均0の確率過程 $(X_t)$ があるとき、添え字の空間には $(X_t)$ の相関構造をもとに擬距離が入る。ところがその距離の意味で添え字の空間が大きすぎると、$\sup_t |X_t|$ は発散してしまう。大きさの測り方はいろいろあるのだが、基本的には全有界性のようなものがコントロールされていることが望ましい。例えば、カバリングナンバー ($\epsilon$ を固定したときの $\epsilon$-netの要素数の最小値) が大きすぎないことが条件になる。</p>
+<p>逆に、「添字空間の大きさを測る尺度」によって確率過程の最大値をタイトに評価できることが知られている。</p>
+<p>そこでようやく表題の概念が出てくる。<br>ワンセンテンスで言えば、Generic chainingというのは、<strong>確率過程の最大値を添字空間の大きさを使って評価するやり方のなかで、とりわけ高級なもの</strong>である。同目的のテクニックに連鎖 (chaining) という名前がついているものがまずあって、それをさらに一般化したものなのでこういう名前がついている。</p>
+<p>結論の一部を先取りすると、距離の入った添字空間 $(T, d)$ の複雑さの尺度を、次のような量で測る：<br>$$<br>\gamma_2(T, d) := \inf \sup_{t \in T} \sum_{n=0}^\infty 2^{n/2} d(t, T_n)<br>$$<br>$T_n$ というのは $T$ の「代表点の集合」で、基本的には $n=0,1,\ldots$ とともに要素数が増えていく。だんだん解像度を上げていく感じだ。$T_n$ 要素数の増え方にはある程度制限がかかっていて、$\inf$ はそのような $T_n$ の全体にわたってとる。<br>このように定義した $\gamma_2$ という謎の量が、なぜかガウス過程のsupの性質をとてもよく捉えている。</p>
+<p>これがしかしどの程度重要な概念かというと、言ってしまえばマニアックな知識だ。機械学習の論文を読む人間の95%にとって必要にならない程度だと思う。それでも、例えば昨年 (2015年) のNIPSにもそれ自体をテーマにした論文が通っていたりして、やっている人はやっている。つまり、この知識が必要になる残りの5%とは、学習理論をやっている人間のことである。</p>
+<a id="more"></a>
+<h2 id="最尤推定からの導入"><a href="#最尤推定からの導入" class="headerlink" title="最尤推定からの導入"></a>最尤推定からの導入</h2><p>ちょっと脱線して、どのような確率過程に興味があるのか、例を書いてみる。（ただし前後の話とは直接の関係がない。）</p>
+<p>統計っぽい学問の中には、ものすごく大雑把ではあるが、次のような形で書ける問題がわりと多いはずだ：</p>
+<ul>
+<li>$X= (X_1, X_2, \ldots, X_n)$というデータが観測された。</li>
+<li>実はデータ $X$ は、未知の確率分布 $P$ に独立同一分布でしたがう確率変数（の実現）であったらしい。</li>
+<li>このとき、$P$ について何が言えるか？</li>
+</ul>
+<p>「$P$ について何か言う」という言い回しだとあまりに漠然としている。ひとつの具体的な形としては、「$P$ の期待値の形で書ける目的関数 (リスク関数) を最小化する最適化問題を解きたい」というのがある。</p>
+<p>確率分布のパラメータ推定がいい例だ。<br>$\mathcal{P} = \{ P_\theta: \theta \in \Theta \}$という候補集合の中に $P$ が含まれているのだ、という仮説を立ててみる。パラメータの集合 $\Theta$ は有限次元の多様体だったり (正則パラメトリックモデル)、有限次元っぽいけど境界があったり所々尖っていて多様体だと見なせなかったり (特異モデル)、関数空間だったり (ノンパラメトリック) 色々だ。</p>
+<p>問題は次のようになる：<br><em>真のパラメータ $\theta_0 \in \Theta$ が存在して、$X_{i} (i=1,\ldots, n)$ は $P = P_{\theta_0}$ にi.i.d.に従っているとする。$\theta_0$を当てよ。</em></p>
+<p>「当てよ」というのは、推定量 $\hat{\theta}(X_1, \ldots, X_n)$ という名の関数を構成して $\theta_0$ にできる限り近づけ、ということだ。そして、「できる限り近づけ」というのは適当な擬距離を与えれば定義できる。尺度はなんでもいいのだが、説明の都合上、天下り的に<a href="https://en.wikipedia.org/wiki/Kullback–Leibler_divergence" target="_blank" rel="noopener">KLダイバージェンス</a>を使うことにする。<br>$$<br>\rho(\theta_0, \hat{\theta}) = P \log \frac{p(x \mid \theta_0)}{p(x \mid \hat{\theta})}<br>= - P \log p(x \mid \hat{\theta}) + P \log p(x \mid \theta_0)<br>$$<br>上の式で$P \log p(x \mid \theta_0)$ というのは $\theta_0$ にしか依らないから、$\hat{\theta}$ を動かして最適化しようという営みにはたぶん関係がないだろう。というわけで結局、次のような問題を考えることになる。</p>
+<p><em>次のリスク関数を最小にする $\hat{\theta}$を選べ：</em><br>$$<br>R(\hat{\theta}) = -P \log p(x \mid \hat{\theta}) = \int -\log p(x \mid \hat{\theta}) \dd P(x).<br>$$</p>
+<p>しかし、これが $R(\theta)$ という関数の単なる最適化問題にならないのが統計学の困ったところだ。</p>
+<p>なぜなら、そもそもの目的は $P$ を知ることであってそれは未知なのだから、それによって定義されるリスクも未知である。ためしに作ってみた推定量がリスクをどの程度小さくしてくれるかは永久に観測できない。<br>一方、真の期待値 $P$ の代わりに得られるのは経験期待値 $P_n$ である。経験リスク関数<br>$$<br>R_n(\theta) = - \frac{1}{n} \sum_{i=1}^n \log p(X_i \mid \theta)<br>$$<br>が、サンプルサイズ $n$ が大きくなるにつれて真の $R$ に収束したとする。このとき、$R_n$を最小化してつくった $\hat{\theta}$ は漸近的に真の $\theta_0$ に収束してくれる (一致性)。$n$ が有限でも十分大きければまあそこそこ信用ができるだろう。これが最尤推定量である。もう少し一般的なくくりでは、M推定量とか経験リスク最小化 (ERM) とか呼ばれる。</p>
+<p>$R_n$ が $R$ に収束すると嬉しいと述べたが、もう少し正確には $\Theta$ 上で一様収束すると嬉しい。$\theta$を固定すれば、<a href="https://ja.wikipedia.org/wiki/大数の法則" target="_blank" rel="noopener">大数の法則</a>があるので各点収束はするのだが、それでは不十分だ。本当は$\theta$を動かして、最小値をとるところでの挙動を考えたい。だから、興味があるのは<br>$$<br>\sup _{\theta \in \Theta} |P_n \log p(\cdot \mid \theta) - P \log p(\cdot \mid \theta) |<br>$$<br>という量になる。これは「$\Theta$ 上の確率過程の最大値」である。さらに、もっと一般には $\Theta$ が関数空間だったりするので、与えられた関数の集合 $\mathcal{F}$ に対して<br>$$<br>\sup_{f \in \mathcal{F}} |P_n f - Pf|<br>$$<br>の挙動が手っ取り早くわかる理論が欲しい。</p>
+<p>ここで出てくる $P_n - P$ という「関数空間を添え字にもつ確率過程」を経験過程と呼ぶ。</p>
+<p>さて、$n \to \infty$ の極限で、スケールした経験過程 $\sqrt{n} (P_n - P)$ はガウス過程に法則収束することがある。中心極限定理の無限次元版みたいな感じだ。だからガウス過程というのは、経験過程を使って書けるいくつかの現象（最尤推定、M推定、 LASSO）たちの、ある意味で極限に居座っている存在なのであって、ガウス過程について調べることがそれらの漸近挙動を調べることにつながったりする。</p>
+<h1 id="有限個のsub-Gaussianの最大値"><a href="#有限個のsub-Gaussianの最大値" class="headerlink" title="有限個のsub-Gaussianの最大値"></a>有限個のsub-Gaussianの最大値</h1><p>最大値の話に戻る。</p>
+<p>$(X_t)$ で $t \in T$ 上の確率過程を表すとする。$(T, d)$ と書いたら $d$ は擬距離ということにする。<br>$d$ で測ったときの $T$ の複雑さが $\sup_t |X_t|$ の挙動にどのような影響を与えるのか、というのが興味の対象である。しかし、何事も一番つまらない例から考えようと思う。</p>
+<p><strong>$T$ が有限集合だったら簡単だ。</strong></p>
+<p>$T = \{ 1, 2, \ldots, N \}$ としてみる。<br>この場合は確率過程といっても有限個の確率変数のあつまりで、supはいつもmaxのことだ。</p>
+<p>例えば、$|X_t|$の分布関数の上界が与えられていたとする。<br>$$<br>\Pr (|X_t| \leq a) \leq F(a)<br>$$<br>$X_t$ たちの相関構造は完全に無視しても、union boundというものがあるので、次のようなことは言える。<br>$$<br>\Pr(\max_t |X_t| \leq a) \leq \sum_{t=1}^N F(a) = NF(a)<br>$$<br>楽勝だ。<br>期待値に関しても、各$t$について$\mathbb{E}|X_t| \leq B$だとすれば、非負のもののmaxよりは和のほうが小さくないので<br>$$<br>\mathbb{E} \max_t |X_t| \leq N B<br>\tag{1}<br>$$<br>楽勝だ。</p>
+<p>いや良くないです。</p>
+<p>これではさすがにつまらなすぎるので、$T$ が有限個の範囲内で、もう少し精密なことを考えてみる。<br>$X_t$ たちの相関を考えないのは上と同じではあるが、$X_t$ は<a href="https://en.wikipedia.org/wiki/Sub-Gaussian_random_variable" target="_blank" rel="noopener">sub-Gaussian</a>、つまりモーメント母関数が次の不等式を満たすもの<br>$$<br>\mathbb{E}e^{\lambda X_t} \leq \exp\left(\frac{\lambda^2 \sigma_t^2}{2}\right)<br>$$<br>であるとしてみる。<br>$X_t$ が $\sigma_t^2$ より小さい分散をもつ正規分布だったり、有界だったりすれば、sub-Gaussianである。<br>あるいは、<br>$$<br>\Pr (|X_t| &gt; a) \leq C \exp \left( -\frac{a^2}{2\sigma_t^2} \right)<br>$$<br>のような裾確率をもっていればsub-Gaussianである。要はGaussianより裾が軽いという意味だ。</p>
+<p>すると、有限個のsub-Gaussianの最大値について、次のようなことが言える。</p>
+<p><strong> 定理 (sub-Gaussianの最大不等式) </strong></p>
+<hr>
+<p><em>$X_t$ ($t = 1, \ldots, N$) はそれぞれパラメータ$\sigma^2_t$をもつsub-Gaussian確率変数であるとする。このとき、<br>$$<br>\mathbb{E}\max_t X_t \leq \sqrt{2 \log N} \max_t \sigma_t^2<br>\tag{2}<br>$$<br>および<br>$$<br>\mathbb{E}\max_t |X_t| \leq \sqrt{2 \log 2N} \max_t \sigma_t^2<br>\tag{3}<br>$$<br>が成り立つ。</em></p>
+<p>単純な (1) が $T$ の要素数 $N$ に比例したバウンドだったのに対して、こちらは $\sqrt{\log N}$ というオーダーなのでまだ地球に優しい。<br>証明はわりと簡単なのだが省略する。主張の形は[1]のプレプリント版のLemma 2.3.4 を参考にした。</p>
+<h1 id="無限個だと結局困る"><a href="#無限個だと結局困る" class="headerlink" title="無限個だと結局困る"></a>無限個だと結局困る</h1><p>有限個だったらほぼこれでいいのだが、(1) にしろ (2) にしろ (3) にしろ、結局 $N = \infty$ だと意味のないバウンドになってしまう。<br>この先に行くためには、$X_t$ どうしの相関を考慮にいれる必要がある。</p>
+<p>特に、$T$ に距離が定義されていて、近いところにいる $X_t$ たちはほぼ近い値をとるのであれば、そいつら同士を比べてもあまり意味がない。互いに距離 $\epsilon$ 以上離れた $t$ をピックアップしてその中での最大値を考えればいい気がする。というわけで、距離 $d$ でみた $T$ の大きさを考えるモチベーションがようやく生じてくるのだが、記事が長くなりそうなのでこの辺で区切る。</p>
+<h2 id="※まとめ作成の動機"><a href="#※まとめ作成の動機" class="headerlink" title="※まとめ作成の動機"></a>※まとめ作成の動機</h2><p>個人的には、generic chainingそのものに興味があるというわけではないけれど、「モデルの大きさの測り方」について、ちょっと執拗なくらいに理解してしまいたいという気持ちはある。「モデルが複雑すぎると過学習するよね」「だからAICなどでモデル選択するんだ」というストーリーは今や誰でも馴染み深い。ところが、ではモデルの複雑さはどう定義されるのか、過学習って一体何なのか、<strong>いやそもそも学習って何や</strong>、ということを突き詰めてみると、本質的なところは案外わからない。少なくとも自分にはまだ答えられる気がしない。仮に答えたとしても、隣の席に座っているデータサイエンティスト同士で話が食い違いそうだ。p値のことだって誰も知らない。<br>一方で冷静な事実として、推定量の候補があまりに多すぎると経験過程の最大値が暴れてしまう。だから、一致性が理論的に (あくまで理論的に) 破綻してしまうモデルの大きさというのがあって、その境目を超えた大きさで最尤推定してしまったものは文句なく過学習と言えそうだ。</p>
+<p>（嘘です。モデル選択についてはもっと統計っぽい深い話はあるはずだし、過学習とは何かについても、こんな数学みたいな水準の話ではなく、統計学や学習理論の枠内で決着がつく気がする。事件は会議室で起きているんじゃない。現場で起きているんだ。）</p>
+<p>とにかく、モノの複雑さを測るための既存の方法を整理しておきたいということである。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Giné and Nickl. Mathematical Foundations of Infinite-Dimensional Statistical Models, Cambridge University Press, 2015.</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-3/">2016/3</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/学習理論/">学習理論</a>, <a href="/blog/tags/経験過程論/">経験過程論</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

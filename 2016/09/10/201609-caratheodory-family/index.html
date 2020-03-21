@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Watanabe (2009) 本におけるカラテオドリ集合 | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="Algebraic Geometry and Statistical Learning Theory [W09] という本を輪読している。独自色の強い記法が使われていたりするので、自分の手持ちの知識にキャストする作業でそれなりに骨が折れる。
+[W09] Watanabe. Algebraic Geometry and Statistical Learning Theory. Cambridge University Press, 2009.
+大変だった部分を随時メモしていく。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Watanabe (2009) 本におけるカラテオドリ集合">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-09-10T11:09:51.000Z"><a href="/blog/2016/09/10/201609-caratheodory-family/">2016-09-10</a></time>
+      
+      
+  
+    <h1 class="title">Watanabe (2009) 本におけるカラテオドリ集合</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Algebraic Geometry and Statistical Learning Theory [W09] という本を輪読している。独自色の強い記法が使われていたりするので、自分の手持ちの知識にキャストする作業でそれなりに骨が折れる。</p>
+<p>[W09] Watanabe. <a href="http://www.cambridge.org/catalogue/catalogue.asp?isbn=9780521864671" target="_blank" rel="noopener">Algebraic Geometry and Statistical Learning Theory</a>. Cambridge University Press, 2009.</p>
+<p>大変だった部分を随時メモしていく。</p>
+<a id="more"></a>
+<p>5章における経験過程の定義はこのような感じである。たいへん複雑である。</p>
+<p><strong> 定義： 経験過程 ([W09], Def 5.6) </strong><br>下の条件が満たされるとき、$\psi_n$ を経験過程ということにする。</p>
+<ol>
+<li>$X_1, X_2, \ldots, X_n \in \mathbb{R}^n$ は i.i.d. 確率変数とする。<ul>
+<li>$X_i$ の確率密度は $q(x)$ とする。</li>
+</ul>
+</li>
+<li>可測関数 $f: \mathbb{R}^n \times W \to \mathbb{R}$ について、<ul>
+<li>$W \subset \mathbb{R}^n$ は開集合である。</li>
+<li>$w \mapsto f(\cdot, w)$ は $L^p(q)$-値解析関数である ($p \geq 2$)。ただし、$L^p(q)$-値解析関数とは、各 $w^*$ について、ある近傍 $w^* \in U$ と $L^p(q)$ 値の係数 ${ a_\alpha (x) \in L^p(q) }$ が存在して、級数<br>$$<br>f(x, w) = \sum_{\alpha \in \mathbb{N}^d} a_\alpha (x) (w - w^*)^\alpha<br>$$<br>が $w \in U$ では $L^p$ 距離の意味で収束していることをいう。</li>
+<li>各 $w \in W$ に対して $\mathbb{E}_X [ f(X, w)^2] &lt; \infty$.</li>
+</ul>
+</li>
+<li>コンパクト集合 $K \subset W$ があって、<br>$$<br>\psi_n (w) = \frac{1}{\sqrt{n}} \sum_{i=1}^n [ f(X_i, w) - \mathbb{E}_X[ f(X, w)] ]<br>$$<br>は $C(K)$-値の確率変数となる。</li>
+</ol>
+<p>1は通常の仮定だと思う。<br>今回は、もともと「$X$ の真の分布がモデルに入っている」という問題を考えているので、密度 $q$ もある。</p>
+<p>2はこの本独自の仮定である。<br>「$L^p$-値の解析関数」というのは不思議だが、別のところで $K(w) = \mathbb{E}_X[f(X, w)]$ の解析関数としての性質をもとに議論をすすめるときに、$f$ の方の話も整合的になるようにしているらしい。</p>
+<p>ただし、超細かいことだが、本にあるように $f(\cdot, w)$ をBanach空間としての $L^p$ の元だと思ってしまうと $f(X_i, w)$ の値の意味がなくなってしまうので、Banach spaceとかnormといった記述はここでは削除するべきだと思う。しかし、具体例を考えている限りでは自分が心配しているような変なことは起きないようにも見える。そのあたりは日本語で先に出ている本 [W06] の方が余計なことが書いてない分親切だと思う。</p>
+<p>[W06] 渡辺. <a href="http://www.morikita.co.jp/books/book/1905" target="_blank" rel="noopener">代数幾何と学習理論</a>．森北出版，2006.</p>
+<p>3では、w は W ではなくて少し小さいコンパクト集合の上でだけ考えている。<br>おそらくこの部分が経験過程的には若干重要なのだと思われる。この本で出てくる「$\psi_n$ がGaussian processに法則収束する」という主張を示すときに、内部では<br>$$<br>\sup_{ w } \psi_n (w, X^n)<br>$$<br>をはじめとして、確率変数のあつまりを添字 w に関して sup を取るという操作がたくさん出てくるはずである。確率変数の非加算個のsupは確率変数になるとは限らないが、そういう可測性の問題はできればまとめて回避したい。$\psi_n(w, X^n)$ が添字に関して連続で、添字自体は完備可分というふうにすれば、supをとるときにcountable dense setをとってくればよいので問題が起きない。このような添字をとることができる集合を、[SC08] ではカラテオドリ集合と呼んでいる。</p>
+<p>[SC08] Steinwart and Christmann. Support Vector Machines. Springer, 2008.</p>
+<p>よくわかっていないが、解析性に関する性質を調べるときは $W$ が開集合の方が嬉しいのに対し、経験過程関係の性質は添字が完備可分じゃないと嬉しくないので、定義の2と3でこのようなズレが生じている気がする。</p>
+<p>他にも、普通の有限次元の中心極限定理の主張でモーメントに関する条件が若干足りなかったりして落とし穴がある。知らないとわからない類の行間が多いので、学部生とかが輪読するのはつらそうだなという感想も少しある。一方、がんばって読んでいると稀に「これって普通に計算できたんだ」という感じの学びがあって面白い。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-9/">2016/9</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/学習理論/">学習理論</a>, <a href="/blog/tags/経験過程論/">経験過程論</a>, <a href="/blog/tags/個人用メモ/">個人用メモ</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

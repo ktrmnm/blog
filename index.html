@@ -1,0 +1,698 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2020-03-21T06:46:55.000Z"><a href="/blog/2020/03/21/20200321-recent-publications/">2020-03-21</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2020/03/21/20200321-recent-publications/">最近出した論文 (劣モジュラ正則化とかGANとか)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>ブログを約2年放置してしまいました (前回は2018/4/30)。</p>
+<p>この2年ほどのあいだに、自分の環境 (職場、家庭、学位) がいろいろ変わって大変でした。しかしそろそろ仕事以外の勉強も再開していきたいので、リハビリがてら色々書いていこうと思います。</p>
+<p>久しぶりすぎて何から書き始めるか迷ったのですが、自分が関わった論文が直近1年の間に何本か出たので、それらについて書きます。</p>
+<h1 id="劣モジュラ正則化"><a href="#劣モジュラ正則化" class="headerlink" title="劣モジュラ正則化"></a>劣モジュラ正則化</h1><p>劣モジュラ正則化 (submodular regularization) というテーマで論文を2つ書きました。これは自分の博士課程の研究です。</p>
+<p>劣モジュラ正則化とは何かというと、LassoとかGroup lasso, Fused lassoのような凸正則化法を拡張した概念です。これらの正則化法は、推定したいパラメータに対する構造的スパース性 (structured sparsity) を誘導するものです。例えば、線形回帰におけるLassoは</p>
+<p>$$<br>  \min_{\theta \in \mathbb{R}^p} \frac{1}{2} | y - X \theta |^2_2 + \lambda | \theta |_1<br>$$</p>
+<p>というような凸最適化問題の解として定義されるものですが (※記号の説明は略)、ここでL1正則化項はパラメータ $\theta$ に対するcoordinate sparsity (いわゆる普通のsparsity) を誘導します。しかし、もっと「構造のあるスパース性」を考えることもできます。例えば、generalized fused lassoという手法では</p>
+<p>$$<br>  \sum_{(i, j) \in E} |\theta_i - \theta_j|<br>$$</p>
+<p>という正則化項を利用しますが、これは与えられたグラフ $G = (V, E)$ 上で区分的に定数となるような性質を誘導します。</p>
+<p>こういった正則化項が、実は <a href="https://en.wikipedia.org/wiki/Submodular_set_function" target="_blank" rel="noopener">劣モジュラ関数</a> と関係があるということを指摘した <a href="https://papers.nips.cc/paper/3933-structured-sparsity-inducing-norms-through-submodular-functions" target="_blank" rel="noopener">2010年の論文</a> があります。具体的には、Lasso, Group lasso, Fused lassoといったような代表的な手法も含む比較的広いクラスの正則化項が、劣モジュラ関数の凸緩和 (Lovász extension) として書けます。</p>
+<p>このテーマについて本も出ているので、興味があればそちらを参照するのがわかりやすいかと思います。</p>
+<ul>
+<li>河原, 永野. <a href="https://www.kspub.co.jp/book/detail/1529090.html" target="_blank" rel="noopener">劣モジュラ最適化と機械学習</a></li>
+<li>F. Bach. <a href="https://www.nowpublishers.com/article/Details/MAL-039" target="_blank" rel="noopener">Learning with Submodular Functions: A Convex Optimization Perspective</a></li>
+</ul>
+<p>こういった一般化をするひとつの利点として、proximal operator (<a href="http://ktrmnm.github.io/blog/2018/04/30/201804-proximal/">以前のブログ</a> でも書きました) の計算が劣モジュラ関数最小化と関係のあるアルゴリズムで解けるという話があります。というわけで、劣モジュラ正則化というのは、数理統計 (Lasso)、機械学習 (structured sparsityのモデリング)、離散最適化 (劣モジュラ関数最小化) のインターセクションにある研究テーマになっているというわけです。自分が博士課程に進学した当初、こういう分野横断的な話が面白そうだなと思って勉強してましたが、大学で <a href="https://www.elsevier.com/books/submodular-functions-and-optimization/fujishige/978-0-444-52086-9" target="_blank" rel="noopener">劣モジュラ関数の教科書</a> (すごく難しい) などを輪読したりしているうちに最適化の関係ない勉強が楽しくなり、どんどん脱線して収拾がつかなくなってきました。博士課程あるあるっぽい話ですが、皆さん気をつけましょう (?)</p>
+<p>自分の研究ですが、以下のことをしました。（圧縮した説明）</p>
+<ol>
+<li>Degrees of freedomの研究 (<a href="https://www.sciencedirect.com/science/article/pii/S0047259X18305906?via%3Dihub" target="_blank" rel="noopener">論文はこちら</a> ): Degrees of freedomというのは、線形回帰モデルの推定量に対して定義される「実効パラメータ数」のような概念です。あるいは、fixed design regressionにおいてバイアスバリアンス分解したときの、バリアンスに相当する部分です。具体例としては、<a href="https://en.wikipedia.org/wiki/Mallows%27s_Cp" target="_blank" rel="noopener">Mallows’ Cp</a> やAICによるモデル選択では「変数の数」が罰則になりますが、実際にGaussian noiseの設定でOLSのdegrees of freedomを計算すると変数の数が出てきます。一方、degrees of freedom自体は非線形推定量に対しても定義することができて、例えば<a href="https://projecteuclid.org/euclid.aos/1194461726" target="_blank" rel="noopener">Lassoでは解の非ゼロパラメータ数と一致する</a> ことなどが知られています。この研究では、劣モジュラ正則化に対してdegrees of freedomを統一的に計算する公式を導出しています。とくに、計算するアルゴリズムが劣モジュラ関数の選択に依らず、「解の成分の中でユニークな値を数える」という方法でdegrees of freedomが計算できます (現実にはソートの計算量があればOK)。こういった「アルゴリズム的な性質」が劣モジュラ正則化に特有なところで、一般の凸正則化ではこうなるとは限らないのが面白いところです。</li>
+<li>「区分単調信号推定」の研究 (<a href="https://arxiv.org/abs/1905.01840" target="_blank" rel="noopener">論文はこちら</a> ): <a href="https://www.stat.cmu.edu/~ryantibs/papers/neariso.pdf" target="_blank" rel="noopener">Nearly-isotonic regression</a> という手法があり、それについて解析した論文です。単調関数の推定手法で <a href="https://en.wikipedia.org/wiki/Isotonic_regression" target="_blank" rel="noopener">isotonic regression</a> という歴史ある手法があるのですが、それを正則化法に拡張した版がnearly-isotonic regressionです。もともと「単調増加である」というハードな制約があったところを、正則化法にすることによってソフトな制約として扱っているので、ある程度構造的なmisspecificationがあることも許されます。<a href="https://cran.r-project.org/web/packages/neariso/index.html" target="_blank" rel="noopener">Rのパッケージ</a> もあります。自分の研究の文脈としては、実はこのnearly-isotonic regressionは劣モジュラ正則化の一例になっているので、その事実を利用してアルゴリズムを導出したり、上の研究成果を使ってdegrees of freedomを導出したりできます。この論文としては、区分単調信号 (piecewise monotone signal) の推定という設定を考えて、その状況下でのリスクバウンドを導出したりしています。</li>
+</ol>
+<p>博士課程は、(つい最近の生々しい出来事なのであまり整理して語れないですが) まあまあつらかったです。能力的な意味では、自分の場合はコードを書いたり英語での論文ライティングがボトルネックになっていると感じていたので、たくさん練習しようと試みました。が、勉強とか「素振り」ばかりしていると、その間アウトプットが全然ないので、普通にどんどん心が折れていきます…。単著論文中心の研究生活だったのですが、とはいえ、自分に対する報酬の設計はうまくやったほうが精神衛生上よかったなと思いました。また、研究の一貫で劣モジュラ最小化のCython実装とかをかなり時間をかけて書いてました。これは、残念ながら論文成果にはほとんど繋がっていないのですが、劣モ最小化のプログラムは世の中にあまり存在しないはずなので、せめて整理してGithubにでも上げておきたい…が、なかなか時間がとれず、という感じであります。</p>
+<h1 id="GAN"><a href="#GAN" class="headerlink" title="GAN"></a>GAN</h1><p>2019年4月に<a href="https://preferred.jp/ja/" target="_blank" rel="noopener">PFN</a>という会社に入社し、業務で研究をしています。依然として論文も書いたりしており、昨年度はインターン生と書いた論文についての<a href="https://tech.preferred.jp/ja/blog/smoothness-and-stability-in-gans/" target="_blank" rel="noopener">解説記事を会社のブログに書いたりしました</a>。これはGANの理論についての研究ですが、こういった複雑なアウトプットを出せる生成モデルにはずっと興味があるので、今後も何かできたらいいなと思っています。ちなみに、論文が採択されたICLR2020はエチオピア (!) で開催されるはずだったのですが、COVID19の影響で現地開催はなくなってしまいました。どうなることやら…</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T23:00:00.000Z"><a href="/blog/2018/03/04/201803-nn-bcd/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2018/03/04/201803-nn-bcd/">Backpropしないニューラルネット入門 (2/2)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="1-概要"><a href="#1-概要" class="headerlink" title="1. 概要"></a>1. 概要</h1><p>下記のarXiv論文を紹介します。</p>
+<p>Jinshan Zeng, Tim Tsz-Kit Lau, Shaobo Lin, Yuan Yao (2018).<br>Block Coordinate Descent for Deep Learning: Unified Convergence Guarantees.<a href="https://arxiv.org/abs/1803.00225" target="_blank" rel="noopener">arXiv:1803.00225</a></p>
+<p>現時点では投稿されて間もない論文ですが、個人的には機械学習の論文を読んでいて久々に楽しい気持ちになれました。</p>
+<p>論文の提案手法はgradient-free methodと呼ばれる手法の一種なので、本記事はそのあたりのレビューも少し兼ねます。</p>
+<h1 id="2-勾配法の収束条件"><a href="#2-勾配法の収束条件" class="headerlink" title="2. 勾配法の収束条件"></a>2. 勾配法の収束条件</h1><p>ニューラルネットの構造をひとつ固定し、その構造を使って表せる関数の全体を $\mathcal{F}$ と書きます。ニューラルネットの学習とは、与えられた損失を最小化する関数を見つけることです。例えば、二乗損失なら<br>$$<br>\hat{f} \in \arg \min_{f \in \mathcal{F}} \sum_{i=1}^n (y_i - f(x_i))^2<br>$$<br>のようになります。<a href="http://ktrmnm.github.io/blog/2018/03/04/201803-nn-generalization/">Part 1</a>で述べたとおり、この最適化問題が解けるという前提のもとで、いくつかの新しい汎化誤差バウンドが得られています。しかし、これは一般には非凸最適化となり、大域最適解へが得られることは保証できません。</p>
+<p>現在、ニューラルネットの学習はSGD, AdaGrad, Adam, RMSPropといった勾配法ベースの最適化手法が使われていることが多く、主要な深層学習ライブラリも、勾配計算 (Backprop) の機能を提供することを主な目的としていると思います。これらの手法は、目的関数が凸であれば大域解への収束が保証されていることが多いです。</p>
+<p>が、実際に興味のある目的関数は凸ではなく、もっというと、ReLUを使った場合は微分可能ですらありません。ちなみに、目的関数が凸でも、微分可能性のようなもの (正確にはsmoothness) は収束レートに関わることがあります。</p>
+<p>また近年、ハードウェアへの移植などを目的として、<a href="https://arxiv.org/abs/1602.02830" target="_blank" rel="noopener">Binarized Neural Networks</a>のようにパラメータが離散的な値をとる深層学習モデルがあります。このようなモデルではそもそも勾配が存在しないため、勾配ベースの最適化アルゴリズムを直接適用することはできません。</p>
+<h1 id="3-Block-Coordinate-Descent-BCD-ブロック座標降下法"><a href="#3-Block-Coordinate-Descent-BCD-ブロック座標降下法" class="headerlink" title="3. Block Coordinate Descent (BCD, ブロック座標降下法)"></a>3. Block Coordinate Descent (BCD, ブロック座標降下法)</h1><p>だけど、</p>
+<ul>
+<li>目的関数が非凸でも</li>
+<li>微分不可能でも</li>
+<li>勾配を使わなくても</li>
+<li>初期値をどこに設定しても</li>
+</ul>
+<p>局所解に収束することを理論的に示せるよ。<strong>ブロック座標降下法</strong> ならね!!</p>
+<h2 id="3-1-アルゴリズムの概要"><a href="#3-1-アルゴリズムの概要" class="headerlink" title="3.1. アルゴリズムの概要"></a>3.1. アルゴリズムの概要</h2><h3 id="記号"><a href="#記号" class="headerlink" title="記号"></a>記号</h3><p>$T$ 層のニューラルネットを学習する問題を抽象的に定義します。まず、</p>
+<ul>
+<li>$d_0, d_1, \ldots, d_T$ : ニューラルネットの各層の幅。特に、$d_0$ は入力 $x$ の次元、$d_T$ はラベル $y$ の次元と一致</li>
+<li>$W_i \in \mathbb{R}^{d_{i} \times d_{i - 1}}$ : 第 $i$ 層のパラメータ</li>
+<li>$\sigma_i$ : 活性化関数</li>
+</ul>
+<p>として、ニューラルネットで表現している関数は<br>$$<br>f(x) = W_T \sigma_{T - 1} (W_{T-1} \sigma_{T-2}(\cdots \sigma_{1}(W_1 x) \cdots ))<br>$$<br>であるとします。また、</p>
+<ul>
+<li>$X := [x_1, \ldots, x_n] \in \mathbb{R}^{d_0 \times n}$ : 入力データ</li>
+<li>$Y := [y_1, \ldots, y_n] \in \mathbb{R}^{d_T \times n}$ : ラベルデータ</li>
+<li>$\mathcal{L}(f, y)$ : 損失関数 (非負・連続だが凸とは限らない)</li>
+</ul>
+<p>として、経験損失を<br>$$<br>\ell(f(X); Y) := \frac{1}{n} \sum_{i = 1}^n \mathcal{L}(f(x_i), y_i)<br>$$<br>と定義します。$r_i, s_i$ を事前分布や正則化項を表す関数とします。このとき、興味のある最適化問題は、以下のような等式制約のある問題として書けます。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/splitting.png" title="NNの最適化の3-splitting formulation">
+<p>なお、本来最適化すべきパラメータは $W_i$ ($i = 1, \ldots, T$) ですが、スラック変数を導入して $(W_i, V_i, U_i)$ の三つ組を最適化するという意味で、論文中では上の最適化問題を3-splitting formulationと呼んでいます。</p>
+<h3 id="BCDアルゴリズム"><a href="#BCDアルゴリズム" class="headerlink" title="BCDアルゴリズム"></a>BCDアルゴリズム</h3><p>BCDアルゴリズムのアイデアは簡単です。まず、上記の等式制約をFrobeniusノルムによるペナルティとして表現します。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/barrier.png" title="BCDの目的関数">
+<p><a href="https://en.wikipedia.org/wiki/Augmented_Lagrangian_method" target="_blank" rel="noopener">拡張ラグランジュ関数</a> から線形のラグランジュ乗数を取り除いた格好ですが、なんと呼ぶのが適切かはちょっと知りません。二次バリア関数とか？</p>
+<p>あとは、$V_i, U_i, W_i$ のそれぞれに関する最小化をサイクリックに行うだけです。論文からアルゴリズムを引用します。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/ZLLY18_alg1.png" title="Algorithm 1 in Zeng, et al. (2018) arXiv:1803.00225">
+<p>それぞれの部分問題はちょうど近接作用素を求めるような形になっており、例えば「損失 $\ell$ が2次関数、$\sigma$ がReLU、$s_i$, $r_i$ が0」といった典型的な場合ではclosed-formの解が得られます (e.g. Lemma 1)．</p>
+<p>ニューラルネットがconvolution層を含む場合も等式制約を追加すればよいので、アルゴリズムを拡張することは容易であることが述べられています。また、ResNetに拡張した例がAlgorithm 2として提案されています。</p>
+<p>なお、後述するように、このアルゴリズムには理論収束保証もあります。しかし、オリジナルの問題についてではなく、この $\bar{\mathcal{L}}$ が局所解に収束することを保証するものですので、その点に関しては注意が必要です。</p>
+<h2 id="3-2-数値例"><a href="#3-2-数値例" class="headerlink" title="3.2. 数値例"></a>3.2. 数値例</h2><p>論文の数値例を紹介します。追実験などはしていません。</p>
+<p>$T = 4$ 層のDNNでMNISTとCIFAR-10の学習を、BCDおよびSGDで行った結果の引用です。NNの構造やSGDの学習率の詳細は論文を参照してください。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/ZLLY18_fig1.png" title="Figure 1 in Zeng, et al. (2018) arXiv:1803.00225">
+<p>実時間ではなくエポック数の比較ですが、SGDが学習に約100エポック必要とするのに対し、BCDは5エポック以下（！）で学習がほとんど終了していることがわかります。また、最終的なtest accuracyもSGDと比較して遜色ないものとなっています (Table 1).</p>
+<p>定式化から明らかなようにBCDの1回の更新にかかるコストは大きく、メモリに乗らない量のデータをどう扱うかなど疑問点はありますが、promissingな結果であることは間違いないと思われます。</p>
+<h2 id="3-3-その他のgradient-free-method-先行研究"><a href="#3-3-その他のgradient-free-method-先行研究" class="headerlink" title="3.3. その他のgradient-free method / 先行研究"></a>3.3. その他のgradient-free method / 先行研究</h2><p>先行研究に少し触れておきます。（このあたりはまだ勉強中です）。</p>
+<p>ニューラルネットの学習をgradient-freeに行うアルゴリズムとしては、 ADMMベースの手法[1],[2],BCDベースの手法[3]が提案されています。Gradient-freeな方法の動機として、紹介論文や [1] では勾配法との比較が述べられています。計算面での主な違いは、勾配法は小さなミニバッチを使った低コストな更新を多数回行うのに対し、勾配フリー法は多くのデータを使った高コストな更新を小数回行う手法になっており、前者はGPU、後者はCPU上での実行が適しています。勾配法の収束については、勾配消失やプラトーなど既知の問題がありますが、勾配フリー法では紹介論文のような収束保証が得られています。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/table1.png" title="勾配法と勾配フリー法の比較">
+<p>[1] Gavin Taylor, Ryan Burmeister, Zheng Xu, Bharat Singh, Ankit Patel, Tom Goldstein (2016).<br>Training Neural Networks Without Gradients: A Scalable ADMM Approach. In ICML2016. <a href="https://arxiv.org/abs/1605.02026" target="_blank" rel="noopener">arXiv:1605.02026</a></p>
+<p>[2] Ziming Zhang, Yuting Chen, Venkatesh Saligrama (2016).<br>Efficient Training of Very Deep Neural Networks for Supervised Hashing. In CVPR2016. <a href="https://arxiv.org/abs/1511.04524" target="_blank" rel="noopener">arXiv:1511.04524</a></p>
+<p>[3] Ziming Zhang, Matthew Brand (2017).<br>Convergent Block Coordinate Descent for Training Tikhonov Regularized Deep Neural Networks. In NIPS2017. <a href="https://arxiv.org/abs/1711.07354" target="_blank" rel="noopener">arXiv:1711.07354</a></p>
+<h1 id="4-収束保証"><a href="#4-収束保証" class="headerlink" title="4. 収束保証"></a>4. 収束保証</h1><p>BCDアルゴリズムでは、$\bar{\mathcal{L}}$ が局所解に収束することが、比較的広い条件のもとで示されています。</p>
+<h2 id="4-1-Kurdyka-Lojasiewicz-KL-条件"><a href="#4-1-Kurdyka-Lojasiewicz-KL-条件" class="headerlink" title="4.1. Kurdyka-Łojasiewicz (KL)条件"></a>4.1. Kurdyka-Łojasiewicz (KL)条件</h2><p>最近の非凸最適化の論文では、目的関数に課す正則条件としてKurdyka-Łojasiewicz (KL) propertyというものがトレンドになっているようです。まず定義を書きます</p>
+<h3 id="記号-1"><a href="#記号-1" class="headerlink" title="記号"></a>記号</h3><p>(凸とは限らない) 関数 $f: \mathbb{R}^d \to \mathbb{R}\cup \{ + \infty \}$ の $x \in \mathbb{R}^d$ における劣勾配 $g \in \partial f(x)$ とは $(x_k, g_k) \to (x, g)$ となる点列が存在して、$f(x_k) \to f(x)$ かつ<br>$$<br>f(x^\prime) \geq f(x_k) + \langle g_k, x^\prime - x_k \rangle + o(\lVert x^\prime - x_k \rVert_2)<br>$$<br>が成り立つことをいう (正確な定義は <a href="https://arxiv.org/abs/1410.1386" target="_blank" rel="noopener">この文献</a> など)。劣勾配の集合 $\partial f(x)$ を $x$ における $f$ の劣微分という．</p>
+<p>$\partial f(x)$ が空でない $x \in \mathbb{R}^d$ の集合を $\mathrm{dom}(\partial f)$ と書く。また、<br>$$<br>\mathrm{dist}(0, \partial f(x)) := \min\{ \lVert g \rVert_2: g \in \partial f(x) \}<br>$$<br>とする。</p>
+<h3 id="定義：KL条件"><a href="#定義：KL条件" class="headerlink" title="定義：KL条件"></a>定義：KL条件</h3><p>関数 $f: \mathbb{R}^d \to \mathbb{R} \cup  \{ + \infty \}$ が点 $x^* \in \mathrm{dom}(\partial f)$ においてKL propertyをもつとは、3つ組</p>
+<ul>
+<li>$\eta \in (0, +\infty]$</li>
+<li>$x^*$ の近傍 $U$</li>
+<li>凹関数 $\varphi: [0, \eta) \to \mathbb{R}_+$</li>
+</ul>
+<p>が存在して以下の条件を満たすことをいう：</p>
+<ol>
+<li>$\varphi(0) = 0$, $\varphi$ は $(0, \eta)$ で $C^1$ 級</li>
+<li>任意の $s \in (0, \eta)$ に対して $\varphi^\prime(s) &gt; 0$</li>
+<li>任意の $x \in U \cap \{ x: f(x^*) &lt; f(x) &lt; f(x^*) + \eta \}$ に対して、次の <strong>Kurdyka-Łojasiewicz不等式</strong> が成り立つ<br>$$<br>\varphi^\prime(f(x) - f(x^*)) \mathrm{dist}(0, \partial f(x)) \geq 1.<br>$$</li>
+</ol>
+<p>KL不等式が何を言っているかというのが問題ですね。KL条件の意味については<a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">このスライド</a> がわかりやすいです。(確か、以前tmaeharaさんに教えていただいたものです)</p>
+<p>まず、$0 \in \partial f(x)$ というのは $x$ が $f$ の停留点であるということなので、逆に $\mathrm{dist}(0, \partial f(x))$ が大きいならば点 $x$ において $f$ が大きく傾いているということを表します。もし $f$ の等高線でスライスした領域 $\{ x: a &lt; f(x) &lt; b \}$ において一様に $\mathrm{dist}(0, \partial f(x)) \geq c &gt; 0$ が成り立つのであれば、関数の「谷」のような部分に向かって急に落ち込んでいるものと考えられます。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/Bolte_2015_sharp_function.png" title="Figure from Bolte (2015)">
+<p>(図は <a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">Bolte(2015)</a> から引用)</p>
+<p>この性質が成り立つとき、$f$ はこのスライスにおいてsharpである、ということにします。もし $f$ がsharpであれば、近接点法のようなアルゴリズムは有限ステップで「谷底」のような部分に到達できます (ラフな証明は <a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">Bolte(2015)</a> p.17)。</p>
+<p>KL条件は、本質的には<br>$$<br>\mathrm{dist}(0, \partial(\varphi\circ (f(x) - f(x^*)))) \geq 1<br>$$<br>と等価です。これは、凹関数 $\varphi$ によって、等高線のスライスを高さ $f(x^*)$ の「谷底」に近づける速さをコントロールしたときにsharpと見做せる、ということを述べています。よって、なんとなくですが、$f$ 自身が凸でなくても、谷底に到達する何らかの手段は手に入るような感じがします。</p>
+<h3 id="KL条件を満たす関数"><a href="#KL条件を満たす関数" class="headerlink" title="KL条件を満たす関数"></a>KL条件を満たす関数</h3><p>重要な点は、実はかなり多くの関数がKL条件を満たすことがわかります。というか、「KL条件を満たす関数がたくさんある」ということそのものがこの理論の根幹をなす結果になっているようです。</p>
+<ul>
+<li>解析関数はKL条件を満たす。</li>
+<li>グラフが半代数的集合になる関数を半代数的関数 (semialgebraic function) という。すべての半代数的関数はKL条件を満たす。</li>
+<li>半代数的関数は有限個の和や積、合成などの操作で閉じる。</li>
+</ul>
+<p>例えば、2次関数やReLUなどは半代数的関数なのでKL条件を満たします。よって、それらの和・積・合成によってできている訓練損失もKL条件を満たすことが示せます (Proposition 1)。</p>
+<h3 id="KL条件から何が言えるか"><a href="#KL条件から何が言えるか" class="headerlink" title="KL条件から何が言えるか"></a>KL条件から何が言えるか</h3><p>ずばり、近接点法や座標降下法のようなアルゴリズムの収束保証と収束レートの導出に使えます[4] [5]。具体的には、近接点法では $\varphi(s) = c s^(1- \theta)$ ($\theta \in [0, 1)$) のような形をしているとき、$\theta = 0$ なら有限ステップで停留点に収束、$0 &lt; \theta \leq 1/2$ ならば誤差が $O(\exp(-k))$ で収束、$1/2 &lt; \theta &lt; 1$ ならば $O(k^{-(1 - \theta)/(2\theta - 1)})$ で収束、という結果が得られており [4]、紹介論文でもこの結果に帰着することで収束レートを出しています。</p>
+<p>[4] Hedy Attouch, Jérôme Bolte (2009).<br>On the convergence of the proximal algorithm for nonsmooth functions involving analytic features. Mathematical Programming, 116, 5–16. <a href="https://pdfs.semanticscholar.org/5913/62ef83ce9050159ab8c9b70f8cf8e7c8319d.pdf" target="_blank" rel="noopener">プレプリント</a></p>
+<p>[5] Hedy Attouch, Jérôme Bolte, Benar Fux Svaiter (2013).<br>Convergence of descent methods for semi-algebraic and tame problems: proximal algorithms, forward–backward splitting, and regularized Gauss–Seidel methods. Mathematical Programming, 137, 91–129. <a href="https://link.springer.com/article/10.1007/s10107-011-0484-9" target="_blank" rel="noopener">URL</a></p>
+<h2 id="4-2-BCDの収束"><a href="#4-2-BCDの収束" class="headerlink" title="4.2. BCDの収束"></a>4.2. BCDの収束</h2><p>DNNに対するBCDの収束は次のことが示せます。($\bar{\mathcal{L}}$ の収束であることに注意)</p>
+<p><strong>仮定</strong></p>
+<ul>
+<li>$i = 1, \ldots, T-1$ について、活性化関数 $\sigma_i$ は $L$-Lipschitzである</li>
+<li>関数 $\bar{\mathcal{L}}$ はある点でKL条件を満たす。特に、(a) $s_i, r_i$ が半代数的関数であり、(b) 損失関数が2乗損失、ロジスティック損失、ヒンジ損失のいずれかであり、(c) 活性化関数がReLU、シグモイド、線形リンクのいずれかであれば、どの組み合わせでもこの条件は満たされる。</li>
+</ul>
+<p><strong>Theorem 2 (要点のみ)</strong><br>上の仮定が成り立つとする。BCDアルゴリズムの第 $k$ ステップでの出力を $P^k$ とする。</p>
+<ol>
+<li>BCDアルゴリズムにおいて、$\mathrm{dist}^2(0, \partial \bar{\mathcal{L}}(P^k))$ のrunning best rate ($k$ステップまでの最良値) は $o(1/k)$ である。</li>
+<li>関数 $\bar{\mathcal{L}}$ がある点において、$\varphi(s) = c s^{1 - \theta}$ に対してKL条件を満たすならば、停留点への収束レートが得られる。</li>
+</ol>
+<h1 id="5-結論"><a href="#5-結論" class="headerlink" title="5. 結論"></a>5. 結論</h1><p>現在、「GPUに廃課金して勾配法で殴る」という手法が主流になっていると思われますが、これを機に今後はgradient-freeな手法にも期待できるかもしれません。</p>
+<p><blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">深層学習の一般論を講義するのに、 いやがるニューラルネットにわざわざbackpropする必要があるでしょうか？ニューラルネットにも命があります。 命あるものを粗末に扱うことは許されません。</p>&mdash; 某ことり (@ktrmnm) <a href="https://twitter.com/ktrmnm/status/969581746319585280?ref_src=twsrc%5Etfw" target="_blank" rel="noopener">2018年3月2日</a></blockquote></p>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p><a href="http://www.ms.u-tokyo.ac.jp/~kawazumi/spcm.html" target="_blank" rel="noopener">(参考)</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T20:08:59.000Z"><a href="/blog/2018/03/04/201803-nn-generalization/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2018/03/04/201803-nn-generalization/">Backpropしないニューラルネット入門 (1/2)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p>最近、統数研で行われた<a href="https://ismseminar.github.io/fimi2018/" target="_blank" rel="noopener">関数推論のワークショップ</a>を聴講したり、面白いarXiv論文に出会ったりしまして、深層学習の理論への個人的な関心が高まってきました。そこで、いくつか関心があることをブログにまとめようと思います。</p>
+<p>タイトルはほぼ釣りですが、</p>
+<ul>
+<li>今回は「最適化マターをすべて無視した場合の汎化理論」</li>
+<li>次回は「Backpropしない最適化手法」</li>
+</ul>
+<p>という予定なので、そこまで間違ってはいないつもりです。ちなみに、網羅的なレビューではありません。</p>
+<h1 id="汎化というミーム"><a href="#汎化というミーム" class="headerlink" title="汎化というミーム"></a>汎化というミーム</h1><p>機械学習の研究は「手法そのものの基礎研究」という側面がありますので、深層学習の研究の目標としては</p>
+<ol>
+<li>なぜ深層学習がうまくいっているように見えるのか</li>
+<li>どうすれば「理論保証つきで」もっとうまくいくのか</li>
+</ol>
+<p>ということはぜひ解明されるべきかと思います。（もちろん、一枚岩の分野ではなく、応用研究が重要です）。</p>
+<p>「なぜうまくいくのか」というのは、汎化 (generalization) の理論を掘りすすめるということです。</p>
+<p>今までの統計的機械学習は、汎化というパラダイムとともにずっと歩んできました。汎化というのは、「手元にあるデータがとある未知の法則から発生したものであるとき、同じ法則から発生するであろう未来のデータをうまく説明できる能力」です。もう少し現場で使われている表現だと、test accuracyが良くなる状態というのが汎化といえます。</p>
+<p>そして、よい学習とモデルの複雑さにはトレードオフの関係があります。</p>
+<ul>
+<li>理論的には、リスクや<a href="https://en.wikipedia.org/wiki/Vapnik%E2%80%93Chervonenkis_theory" target="_blank" rel="noopener">汎化誤差の上界</a>に「モデルの大きさ」に相当する項が含まれてしまうため、トレードオフを考慮して <strong>モデルはなるべく小さく選ぶ</strong>、というのが<a href="https://ja.wikipedia.org/wiki/%E8%B5%A4%E6%B1%A0%E6%83%85%E5%A0%B1%E9%87%8F%E8%A6%8F%E6%BA%96" target="_blank" rel="noopener">AIC</a>以来の世界観になっています。</li>
+<li>経験的にも、訓練誤差が良いのにテスト誤差がとても悪いという現象（過学習）があることが良く知られていて、モデル選択や正則化といったツールが実務上も欠かせない存在になっています。</li>
+</ul>
+<p>しかし、「汎化」や「過学習しないようにモデルは小さく」というのはあくまで <strong>ミームではあるものの公理ではなく</strong>、現実にはもっと色々なことがありえます。</p>
+<p>例えば深層学習では、標準的な意味ではモデルが大きすぎるが、依然として<a href="https://arxiv.org/abs/1611.03530" target="_blank" rel="noopener">うまく行っているように見える現象が報告</a>されるなど、従来からの「過学習のストーリー」には乗らない例が増えていますし、それに伴って <a href="https://arxiv.org/abs/1710.05468" target="_blank" rel="noopener">汎化の定義を再考する試み</a> なども行われています。要するに、「こういう指針でやればだいたいの場合うまく行く」という思想のようなものをアップデートする必要が出てきている、ということかと認識しています。</p>
+<h1 id="2018年の汎化理論：関数クラスの拡大"><a href="#2018年の汎化理論：関数クラスの拡大" class="headerlink" title="2018年の汎化理論：関数クラスの拡大"></a>2018年の汎化理論：関数クラスの拡大</h1><p>ここで、ちょっと回帰の問題を考えてみます。</p>
+<p>データとして、$(x_i, y_i)$ ($i = 1, \ldots, n$) という入出力ペアが与えられたとします。真の法則は $y_i = f(x_i) + noise$ というな形をしているとして、関数 $f(x)$ を推定する問題を考えます。</p>
+<p>ニューラルネットの構造を適当にひとつ固定して、パラメータを変えることで表現できる関数の全体を $\mathcal{F}$ としたとき、最小二乗法によるフィット<br>$$<br>\hat{f} \in \arg \min_{f \in \mathcal{F}} \sum_{i=1}^n (y_i - f(x_i))^2<br>\tag{1}<br>$$<br>によって関数を推定することができます。明示的な正則化などは、数式の上ではひとまず考えないことにします。</p>
+<p>この最小化問題が厳密に解けたと仮定して、予測誤差の意味でどれだけよいかを考えます。</p>
+<p>統計学においては、このような問題は、いわゆるノンパラメトリック回帰と呼ばれている分野の守備範囲でした。ノンパラ回帰の理論は、「関数が滑らかである（与えられた回数微分可能である）」という仮定に負っていた部分が多く、最適性などもその範疇で考えられてきました。しかし、このままでは、ニューラルネットを学習して作った関数$\hat{f}$ が「他と比べてことさらに良い」ことの理由を答えるのが難しくなってしまいます。仮定が現実と合わなくなったケースですね。</p>
+<p>そこで、関数が大域的に滑らかであるという仮定から離れ、現実のデータに即して「よりカスタマイズされた関数構造」を考えることでニューラルネットの良さを説明しよう、というアイデアがあります。この流れで、前述の<a href="https://ismseminar.github.io/fimi2018/" target="_blank" rel="noopener">統数研ワークショップ</a> の講演の中から最近の研究を挙げると：</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1708.06633" target="_blank" rel="noopener">Schmidt-Hieber (2017)</a> では、疎な入力をもつ滑らかな関数のcompositionで書けるクラス （<a href="http://pub.math.leidenuniv.nl/~schmidthieberaj/research.html" target="_blank" rel="noopener">紹介ページ</a>）</li>
+<li><a href="https://arxiv.org/abs/1705.10182" target="_blank" rel="noopener">Suzuki (2017)</a> では、ある積分作用素の固有値の減衰が速い関数クラス</li>
+<li><a href="https://arxiv.org/abs/1802.04474" target="_blank" rel="noopener">Imaizumi &amp; Fukumizu (2018)</a> では、区分的に滑らかな関数クラス（<a href="https://sites.google.com/view/mimaizumi/research/kaisetsu" target="_blank" rel="noopener">紹介ページ</a>）</li>
+</ul>
+<p>といったように、従来の仮定とは異なる構造をもった関数クラスに対する汎化能力が議論されるようになっています。</p>
+<p>ところで、最適化問題 (1) は非凸最適化になり、一般には大域最適解を得ることができません (computableかどうかわからない)。最適化の問題が絡んだ場合の情報はかなり錯綜している印象で、「実はすべての局所解は大域解だから最適化の問題はない」「SGDなどの特定のアルゴリズムが汎化の意味でよい局所解を自動的に選択するから問題ない」などの意見があるようです（文献は割愛）。</p>
+<h1 id="感想：何がうまくいっていないか"><a href="#感想：何がうまくいっていないか" class="headerlink" title="感想：何がうまくいっていないか"></a>感想：何がうまくいっていないか</h1><p>従来の考え方のままでは、現状何がうまくいかなくなっているのかを考えてみると、要するに</p>
+<ol>
+<li>理論で使われていた仮定が現実と合わなくなった（定式化の欠陥）</li>
+<li>不安定な方法やヒューリスティックスに頼っている（アルゴリズムの欠陥）</li>
+</ol>
+<p>ということなんじゃないかなあと思います。</p>
+<p>定式化に欠陥があると、理論的に最適な手法と現実に起きていることにズレが生じますし、どんなに解析を精密にしても深層学習が強い理由はそこにはない、ということになってしまいます。そこで、上でレビューしたように、新しい適切な問題設定を探すということが理論面での大きな目標のひとつになるのかな、という所感です。</p>
+<p>また、アルゴリズムが不安定だと結果の再現性がなくなってしまいます。そうすると分野全体としても、いろいろな結果から示唆を得て新しい思想を固める作業に時間がかかってしまう気がします。会議の締め切り前になると、エポックごとに誤差が上がった下がったと一喜一憂する人々の姿が世界各地で見られるそうですが、やはり、最適化手法の側にも理論保証がついていないと安心して夜も眠れないのではないかと思います。</p>
+<p>というわけで次回はアルゴリズムの話を書きたいです。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T20:00:00.000Z"><a href="/blog/2018/03/04/201803-soda18yomi/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2018/03/04/201803-soda18yomi/">SODA&#39;18読み会に参加した</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>先月ですが、理研AIPで<a href="https://sites.google.com/view/soda2018reading" target="_blank" rel="noopener">SODA2018読み会</a>なるものが開催されたので、自分も論文を読んできました。</p>
+<p>読んだ論文：<br>Blais, et al. (2018) Tolerant Junta Testing and the Connection to Submodular Optimization and Function Isomorphism <a href="https://arxiv.org/abs/1607.03938" target="_blank" rel="noopener">(URL)</a></p>
+<p>スライド：</p>
+<script async class="speakerdeck-embed" data-id="72fe827e5eb345748a810784874d847e" data-ratio="1.41436464088398" src="//speakerdeck.com/assets/embed.js"></script>
+
+<p>内容としては性質検査 (property testing) という分野に属する研究で、与えられたブール関数がk-juntaという性質をもつかどうかを、入力長によらない定数時間で判定するアルゴリズムを提案したものです。（もう少し正確には、tolerant testingという設定で、kの多項式回のクエリアクセスでの検査が可能であることが示された点が新しいです）。</p>
+<p>個人的には、SODA (理論CS) の論文にちゃんと触れるのは初めてだったので、どの発表もとても勉強になりました。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T18:30:00.000Z"><a href="/blog/2018/03/04/201803-mlcode-test/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2018/03/04/201803-mlcode-test/">機械学習アルゴリズムをテストしたい</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="動機"><a href="#動機" class="headerlink" title="動機"></a>動機</h1><p>論文などを読みながら機械学習のアルゴリズムを実装していると、</p>
+<ul>
+<li>出力が浮動小数点数の巨大な配列である</li>
+<li>出力がランダムに決まる</li>
+<li>テストケースに対する正しい出力を手計算するのが不可能</li>
+<li>そもそもアルゴリズムを自分が理解してない（死）</li>
+</ul>
+<p>とかの理由で、書いたコードが正しいかどうか全然わからないです。そして、だいたい正しくないです。</p>
+<p>本当は小さい単位でテストしながら書きたいのですが、何がベストプラクティスなのかよく知らないし、とりあえず試したことのメモを蓄積することにしました。</p>
+<h1 id="書いたもの（随時更新）"><a href="#書いたもの（随時更新）" class="headerlink" title="書いたもの（随時更新）"></a>書いたもの（随時更新）</h1><ul>
+<li><a href="https://qiita.com/ktrmnm/items/667a7b7c93cd3fb78419" target="_blank" rel="noopener">Google Test勉強録 (1) CMakeでのビルド</a></li>
+<li><a href="https://qiita.com/ktrmnm/items/a9c9d9eed9ea2d9cebdc" target="_blank" rel="noopener">Google Test勉強録 (2) アルゴリズムのテストを書く</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2017-01-30T13:55:39.000Z"><a href="/blog/2017/01/30/201701-focs-advice/">2017-01-30</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2017/01/30/201701-focs-advice/">[意訳] FOCS著者へのアドバイス (CS理論系論文の書き方)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>この文章は、Boaz Barak教授 (現: Harvard大) による2014年のブログ<br><a href="https://windowsontheory.org/2014/02/09/advice-for-focs-authors/" target="_blank" rel="noopener">Advice for FOCS authors</a><br>を意訳したものです。</p>
+<p>FOCSは、STOCなどと並ぶコンピュータサイエンスの理論系トップ会議です。情報系の分野ではなぜか、国際会議に採択されることがメインの業績として扱われることが多いです。（論文が論文誌に投稿されないので、他分野から見ると「え、何で論文書いてないの」のような反応がしばしば見受けられます。）</p>
+<p>しかし、情報系と一口に言っても、研究の進むスピードは分野によってさまざまです。<br>機械学習などでは、分野としては非常に速いスピードでトレンドが流れていく印象があります。近年は深層学習ブームと言われていますが、arXivに投稿した論文が次の日に他のグループによって引用されている、というような極端な話を方々で耳にします。そういった時間感覚を持つ分野では、年に一度や二度の国際会議ですら情報の速報性が足りない、ということを言う人もいます。</p>
+<p>こういった、「イケてる・速い・競争的・採択率低い」世界に論文を通す技術として、どうやらある特定の方向性のプレゼンテーション能力が要求されてるっぽいぞ、というコンセンサスがなんとなく共有されているように思います。<br>例えば、下記のredditは一時期流行ったものです。<br><a href="https://www.reddit.com/r/MachineLearning/comments/3x3urc/tips_on_publishing_in_nips_icml_or_any_top_tier/cy1aw8o/" target="_blank" rel="noopener">Tips on publishing in NIPS, ICML or any top tier conferences for ML</a><br>内容はほぼほぼ自虐ネタですが、うかつに無視できない部分があったりして大変つらい。<br>個人的に心が痛いのは2と3でして、</p>
+<ul>
+<li>機械学習トップ会議に通すには定理は1つか2つあったほうがいい。内容は問わない。査読者は定理が好きだから。</li>
+<li>数学はいいぞ。でもバランスが必要で、数式が多すぎてはだめ。もし数式が多すぎるならCOLT（注：学習理論の会議）に投稿すべきだ。もし数式がないなら、シグモイドとかソフトマックス関数の定義式を別行立て数式で載せときゃいい。</li>
+</ul>
+<p>とのこと。</p>
+<p>一方、理論系のコミュニティに目を向けると、かなり違う印象を受けます。</p>
+<p>CSの理論研究は基本的には「定理と証明」の地道な繰り返しによって成り立っています。よって、どちらかというと数学系の論文誌と似たような精度で、数学的なステートメントの正しさが検証されます。（応用研究では証明が検証されない、という意味ではないです。）<br>それにもかかわらず、学会の開催頻度は情報系の他の分野と同じです。このため、投稿者はハードな締め切りまでに理論的な貢献を含む論文を書かなければならず、査読者も、一年のある期間に集中して大量の論文を読まなければならないという現象が起きていると考えられます。</p>
+<p>表題のブログは、私が把握している限りでは、CS分野の理論研究の論文を書くにあたっての注意点を紹介している数少ない記事でした。特に、<strong>情報系の会議文化のなかで、定理と証明が主体の論文を書くというのはどういうことか</strong> ということがわかって、個人的には勉強になっています。</p>
+<p>以下は引用です。本記事では、導入とサマリーを除いた主要な部分のみを意訳しています。</p>
+<h1 id="読者のことを考える"><a href="#読者のことを考える" class="headerlink" title="読者のことを考える"></a>読者のことを考える</h1><p>FOCSの投稿論文、そして任意の科学論文を書くにあたって最もチャレンジングなことのひとつは、様々なタイプの読者に同時に対処することです。網羅的ではありませんが、次のようなタイプの読者が含まれると思ってください。</p>
+<p>(1) その分野の専門家。あなたのアプローチが彼らの2007年の論文と比べてどう異なるのか、全て詳細に検証したい読者です。<br>(2) 専門家ではない査読者。あなたのやったことは何なのか、なぜその問題が解きたいのか、論文で使われているテクニックに関して、何らかのとっかかりを掴みたい読者です。<br>(3) あなたの論文にアサインされたPCメンバー。論文を数分間だけ流し読みして、上記の内容の近似を得たい読者です。</p>
+<p>これらの異なる読者に対処するためのおおよその方針としては、<strong>前半の数セクションはコンピュータサイエンス理論の一般的な読者でも理解できるように書き、専門家に向けた詳細は後半のセクションに含まれるようにする</strong> ことです。この方針は次の視点を導きます。</p>
+<h1 id="全力を出せ-Put-your-best-foot-forward"><a href="#全力を出せ-Put-your-best-foot-forward" class="headerlink" title="全力を出せ (Put your best foot forward)"></a>全力を出せ (Put your best foot forward)</h1><p>(2014年現在) FOCSにはページ数制限はありませんが、査読者も投稿論文の全てを読まなくてよい規定になっています。これが実際に意味するところは、私が「Impagliazzoのルール」と呼んでいるものに従うべきということです。つまり、<strong>任意のXに対して、論文の最初のXページを、読者が次のXページを読みたくなるように書く</strong> べきです。</p>
+<p>特に、あなたの結果、テクニック、研究の動機、研究が置かれている文脈、および先行研究と比較した新規性が、論文中の早い段階で明確に述べられるように心がけるべきです。もし、主定理を簡潔に述べるのが難しいならば、その主定理の正式でない版または重要な具体例をまず述べて、完全なステートメントが書いてある箇所を後方参照する、という方法があります。</p>
+<p>上の方法は結果だけでなくテクニックについても適用できます。あなたの素晴らしいアイデアを、テクニカル・セクションまで取っておく必要はありません。最もよく書けている論文の中には、イントロに続いて “Our techniques”, “Proof outline”, “Warmup”, “Toy problem” といった章が設けてあることがあり、証明の背後にあるアイデアを非正式な形でわかりやすく説明しています。</p>
+<p>謙虚さは良いことですが、FOCSの投稿にあたってはそれを徹底する必要はありませんし、あなたの貢献を論文の端っこの方に隠してしまう必要はないのです。逆に、貢献を喧伝しすぎるということも、もちろんしたくありません。</p>
+<p>というわけで…</p>
+<h1 id="さらけ出せ-Put-your-worst-foot-forward"><a href="#さらけ出せ-Put-your-worst-foot-forward" class="headerlink" title="さらけ出せ (Put your worst foot forward)"></a>さらけ出せ (Put your worst foot forward)</h1><p>科学者としては、自分の研究内容について欠陥の可能性・注意点・改善の余地がちゃんと見えるように身をかがめる姿勢をとりたいものです。FOCSの著者にもその姿勢が欠けていないことを期待します。</p>
+<p>主結果がとても制限された状況でしか成り立たない、ということが、論文のSection 4を読んだ段階でようやく発覚したりすると、査読者にとってはめちゃくちゃ腹が立ちます。すべての制限・注意点・仮定・限界は論文の早い段階で述べられるべきです。実際、いくつかの注意点は非常にメジャーなので、イントロで言及してもまだ遅いということがあります。例えば、あなたが単調回路 (monotone circuit) でのみ成立する下界を証明した場合、アブストラクトではっきりとそう書くだけでなく、monotone という単語をタイトルに入れるべきです。一般的に、問題をより簡単にするためのモデルの仮定を選んだならばそれについて議論すべきで、別のモデルを選んだ場合にどのような変更点が生じるか説明すべきです。</p>
+<p>同様に、先行研究との任意の関係およびオーバーラップは論文の早い段階で述べるべきです。もし、結果が先行研究の一般化であるならば、それらがどのように異なるのか、また、そのような一般化を行う動機について説明しましょう。結果があるパラメータについては改善になっているが、他のパラメータについては改善になっていないのであれば、それらの重要性についての議論を行うことが適切です。関連研究の存在を知っているならば、それが仮に出版されていなかったり、あなたの仕事の後になされていたとしても、なおも引用した上で、それらの関連性や前後関係を説明しましょう。</p>
+<h1 id="疑わしきを排除せよ"><a href="#疑わしきを排除せよ" class="headerlink" title="疑わしきを排除せよ"></a>疑わしきを排除せよ</h1><p>科学論文は小説ではありません。理想的には、読者が疑いの中にとどまってしまうことや、良い意味でも悪い意味でも驚きが生じたりすることは、起こらないべきです。FOCSのPCメンバーは信じられないくらい才能のある集団ですが、それでもなお、読者が抱きそうなすべての疑問点と誤解を予測しつつ “foolproof” なやり方で論文が書かれるべきです。（特に、限られた時間のなかで40本もの論文を査読しなければならないような読者についてはそうです）。</p>
+<p>例えばですが、査読コメントに「主定理の証明はXを使えば非常に簡易化できるだろう」と書いてあって、しかしそのXというのがあなたが最初に試してみてうまくいかなかった方法だったりすると、著者にとっては非常に腹立たしいことだと思います。これを避けるには、 “First attempt” というタイトルの章を設けてXについて議論し、なぜうまくいかないか説明するという方法があります。同様に、一見するとあなたの仕事に関係がありそうだが実際には関係がない論文が存在する場合は、それをなお引用して、なぜ「実際には関係がない」のか説明するべきです。</p>
+<p>他には、査読が「シンプルすぎるのでリジェクト」っぽいことを述べているときもムカつきますね。私や他のFOCS PCメンバーは単純さは美徳であると信じていますから、それが原因でリジェクトにすることはありません。しかし、論文が単純すぎて査読者に驚かれるということを避けたいのであれば、証明が先行研究のものに対して「3行の短縮」になっていることを論文の後半のほうで議論します。もし証明が単純なのであれば、それは誇るべきことなので初めからそう言いましょう。もし特定の補題の証明が標準的な手法におけるルーチンの適用であるならば、それは削らずに書くかappendixに移動しましょう。ただし、この場合は証明の最初の部分でそのことを説明し、詳細を追うことをあまり目的としていない査読者が読み飛ばせるようにしましょう。このことは他の場合にも当てはまります。証明中に奇抜な飛躍点 / 些細な点があるならば、そうであることを告げる文章を追加して読者にわかるようにしましょう。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-09-10T11:09:51.000Z"><a href="/blog/2016/09/10/201609-caratheodory-family/">2016-09-10</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/09/10/201609-caratheodory-family/">Watanabe (2009) 本におけるカラテオドリ集合</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Algebraic Geometry and Statistical Learning Theory [W09] という本を輪読している。独自色の強い記法が使われていたりするので、自分の手持ちの知識にキャストする作業でそれなりに骨が折れる。</p>
+<p>[W09] Watanabe. <a href="http://www.cambridge.org/catalogue/catalogue.asp?isbn=9780521864671" target="_blank" rel="noopener">Algebraic Geometry and Statistical Learning Theory</a>. Cambridge University Press, 2009.</p>
+<p>大変だった部分を随時メモしていく。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/09/10/201609-caratheodory-family/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-08-24T22:42:16.000Z"><a href="/blog/2016/08/25/201608-lmc/">2016-08-25</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/08/25/201608-lmc/">Langevin Monte Carlo法には棄却が必要か</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>機械学習系のベイズっぽい論文を読んでいると、SGLD [WT11] やSGRLD [PT13] といった文字列を見ることがあります。これらが何かというとマルコフ連鎖モンテカルロ法 (MCMC) の一種で、正規化定数がわからない高次元の確率分布からのサンプリングを得たい場合などに使われます。</p>
+<p>アルゴリズムの位置づけとしては、</p>
+<ul>
+<li>Langevin Monte Carlo (LMC) とか Langevin Dynamics などという名前で呼ばれている既存アルゴリズムがまずあり、</li>
+<li>それに伴う勾配計算をサブサンプリングを利用して簡略化したもの<br>という感じです。勾配降下法 (GD) を確率的勾配降下法 (SGD) に拡張することにインスパイアされているのだったと思います。</li>
+</ul>
+<p>LMCのモチベーションとしてよく言われるのは、LMCでは (Metropolis–Hastings法に見られるような) 棄却ステップが必要ないということです。MHは、提案分布がうまく選べていなかったりすると棄却がたくさん発生してしまうことが知られていて、サンプリングに無駄な時間がかかってしまいます。MHの採択確率を（ほとんど）1にするというのは全ベイジアンの夢ですが、ある意味それを達成しているのがLMC系のアルゴリズムです。実際に、SGLDの元論文 [WT11] などでは、「棄却率を低くしたい」という動機がかなり強調して書いてあったりします。</p>
+<p>動機だけを聞くとLMCは棄却が要らないという誤解が生じる可能性があるのですが、<strong>残念ながらそういうわけではない</strong> です。実際には、見た目上は同じアルゴリズムでも、サンプルを得たい分布の性質によって棄却が必要な場合とそうでない場合が存在します（ただし、その理論的な境界線をひとことで説明するのは難しい模様です）。</p>
+<p>上のような知識を何度か論文で見かけたことはあったのですが、棄却せずに強行突破すると何が起きてしまうか正直よくわかってなかったです。<br>なので実際にやってみたというのが本記事の趣旨です。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/08/25/201608-lmc/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-05-15T21:48:14.000Z"><a href="/blog/2016/05/16/201605-twoboys/">2016-05-16</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/05/16/201605-twoboys/">火曜日に生まれた男の子の話</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="Twitterで見かけた問題"><a href="#Twitterで見かけた問題" class="headerlink" title="Twitterで見かけた問題"></a>Twitterで見かけた問題</h1><p>先日、こんな問題を見かけました ([1], 元ツイートは2010年)。</p>
+<p><strong>“子どもが二人いる。（少なくとも）一人は男で火曜日に生まれた。二人とも男である確率は？（「火曜日に」を聞かなかった場合の確率も求めてください）”</strong></p>
+<p>条件つき確率の問題でして、個人的にはいい問題だなーと感じました。</p>
+<p>で、率直にいうと答えは</p>
+<ul>
+<li>「火曜日に」という情報を聞かなかった場合は 1/3</li>
+<li>「火曜日に」という情報を聞いた場合は 13/27 (=0.48148…)</li>
+</ul>
+<p>です。</p>
+<h1 id="図を見て3秒で理解する"><a href="#図を見て3秒で理解する" class="headerlink" title="図を見て3秒で理解する"></a>図を見て3秒で理解する</h1><p>ところが、とくに13/27という数字は、仮に条件つき確率の定義を知識として知っていたとしても、全く自明でない印象を受けてしまいます。<br>13とか27とかマジで？という感じ。</p>
+<p>実際に計算して確認しようとすると3分くらいかかるのですが、願わくばもっと短時間で、何が起きているのか理解したいです。3秒くらいで。</p>
+<p>というわけで、3秒で理解するための図を作りました。こちらです。</p>
+<img src="/blog/2016/05/16/201605-twoboys/twoboys_3.png" title="条件つき確率を3秒で理解する図">
+<p>図では、AさんとBさんの性別と誕生日の曜日をタテヨコに並べてあります。2人分の性別と誕生日の組み合わせなので、14 * 14 = 196マスあります。<br>今、「一方は火曜日に生まれた男である」という情報を聞いたので、そうでないマスを黒く塗りつぶすと27マスだけ残ります。その中で、二人とも男であるのは赤く塗った13マスなので、13/27という数字が出てきます。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/05/16/201605-twoboys/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-04-24T11:09:47.000Z"><a href="/blog/2016/04/24/201604-transport-ineq-2/">2016-04-24</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/04/24/201604-transport-ineq-2/">輸送不等式から集中不等式を出す</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>Wasserstein距離がKLダイバージェンスで抑えられるという不等式のことを輸送不等式というのでした。例えば距離空間$(X, d)$上の確率測度$\mu$が$T_1(C)$を満たすというのは、任意の確率測度$\nu$に対して<br>$$<br>W_1(\mu, \nu) \leq \sqrt{C D_{KL} (\mu, \nu)}<br>\tag{1}<br>$$<br>が成り立つことをいいます。</p>
+<p>$f: X \to \mathbb{R}$がLipschitz関数のとき、<br>$$<br>\forall t &gt; 0, \quad \Pr [ f - \mathbb{E}f \geq t] \leq \exp \left( - \frac{C t^2}{2 \lVert f \rVert_{Lip}^2} \right)<br>\tag{2}<br>$$<br>が成り立つという性質を考えます。言葉でいえば「すべてのLipschitz関数の像がsub-Gaussianのように振る舞う」ということです。このような性質をGaussian concentrationと呼びます。</p>
+<p>実は、(1)ならば(2)が成り立ちます。</p>
+<h2 id="機械学習系分野ではどう役立っているか"><a href="#機械学習系分野ではどう役立っているか" class="headerlink" title="機械学習系分野ではどう役立っているか"></a>機械学習系分野ではどう役立っているか</h2><p>学習理論やランダム行列論などでは、Gaussian concentrationはとてもありがたい性質です。最終的なアプリケーションで欲しいのは、あくまで(2)の形の集中不等式なのですが、そうだとしても(1)の形で集中不等式の情報を保持していた方が何かと便利な場合があります。</p>
+<p>例えば、学習理論では、独立同分布に従うデータについての対数尤度や経験リスクがどう振る舞うかということに興味があるわけですが、要素技術としては「単体で(2)を満たすような確率分布の$n$個の直積が再び(2)を満たすかどうか」を考える必要が出てきます。そのとき、少なくとも(1)の形の不等式は直積操作で保存されるということがわかっているので都合が良いです。集中不等式界隈（？）では、こういう性質を不等式のテンソル化 (tensorization) と呼びます。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/04/24/201604-transport-ineq-2/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<nav id="pagination">
+  
+  
+    <a href="/blog/page/2/" class="alignright next">Next</a>
+  
+  <div class="clearfix"></div>
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

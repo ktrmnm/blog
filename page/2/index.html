@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Page 2 | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-04-12T11:22:56.000Z"><a href="/blog/2016/04/12/201604-generic-chaining-3/">2016-04-12</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/04/12/201604-generic-chaining-3/">Generic Chaining (3)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>Generic chainingのタイトさを個人的に理解するためのノートの3つめ。</p>
+<ul>
+<li><a href="http://ktrmnm.github.io/blog/2016/03/23/20160322-generic-chaining-1/">その1</a></li>
+<li><a href="http://ktrmnm.github.io/blog/2016/03/25/20160325-generic-chaining-2/">その2</a></li>
+</ul>
+<p>実は、とてもわかりやすい資料[1]を発見したため、あまり自分でリライトする意味がなくなりつつある。でも一応自分の言葉でまとめておく。</p>
+<p>$X_t$は平均0の$d$-sub-Gaussian processとする。つまり、増分がsub-Gaussianであるような確率過程とする：<br>$$<br>\Pr(| X_s - X_t| \geq u) \leq 2 \exp \left( - \frac{u^2}{2d(s,t)^2}\right).<br>\tag{1}<br>$$<br>下つきの添字がスペース上の都合で書きにくいときは$X_t = X(t)$とも書く。</p>
+<p>特に、$X_t$がガウス過程のときは、距離$d$として、$X_t$から定まる内在的な距離<br>$$<br>d(s, t) = \sqrt{\mathbb{E}(X_t - X_t)^2}<br>$$<br>を用いればよい。</p>
+<p>平均0なので、$t_0 \in T$を固定すれば<br>$$<br>\mathbb{E}\sup_t X(t) = \mathbb{E}\sup_t (X(t) - X(t_0))<br>$$<br>が成り立つ。左辺に興味がある場合も、右辺を考えた方が今は都合がよい。$Y = \sup_t (X(t) - X(t_0))$は非負なので、<br>$$<br>\mathbb{E} Y = \int_0^\infty \Pr(Y \geq u) \dd u<br>$$<br>が成り立つ。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/04/12/201604-generic-chaining-3/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-04-07T15:00:00.000Z"><a href="/blog/2016/04/08/201604-transport-ineq/">2016-04-08</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/04/08/201604-transport-ineq/">輸送不等式の双対</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="ひとことまとめ"><a href="#ひとことまとめ" class="headerlink" title="ひとことまとめ"></a>ひとことまとめ</h1><p>輸送不等式の双対表現がおもしろかったので。</p>
+<h1 id="輸送不等式"><a href="#輸送不等式" class="headerlink" title="輸送不等式"></a>輸送不等式</h1><p>最適輸送 (optimal transport) というジャンルがある。元々どういう問題なのかは[1]などに譲るとするが、最適輸送で出てくる色々なツールが、他の問題を考えるときにも色々と有益だということが知られていて、確率論の別のジャンルでもしばしば使われる。</p>
+<p>$(X, d)$を距離空間とする。$\mu, \nu$を$X$上の (Borel) 確率測度とする。$X^2$上の確率測度$\pi$で、軸方向への周辺分布がそれぞれ$\mu$と$\nu$に等しいようなものを<strong>カップリング</strong>という。</p>
+<p>カップリングは、「輸送計画」みたいなものに相当する。つまり、$X$という空間上にある$\mu$という山を切り崩して$\nu$という山に移し替えたい。どの部分を切り取ってどこに持っていくかということを表したものが$\pi$である。<br>ところが、山を切り崩して移動するというのをタダで行えるわけではない。$X$上の点$x_1$から$x_2$に荷物を運ぶのに、$x_1$と$x_2$の距離が遠いほど多くコストがかかるかかるという状況を考える。沖縄などの地域で通販の送料が無料にならなかったりするのはそういう理由だろう（沖縄に住んでいらっしゃる方はすみません）。例えば、単位体積を$x_1$から$x_2$に運ぶのに、$d^p(x_1, x_2)$円かかるとする。このとき、全体での輸送コストは<br>$$<br>\int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)<br>$$<br>のと書ける。このコストを最小化するように輸送計画を設計しようというのが、最適輸送という問題である。</p>
+<p>上の最小値を<br>$$<br>\inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)<br>$$<br>とする。実は、輸送するためのコストが最小限いくらかかるかで、確率測度のあいだの距離が測れる。実際、<br>$$<br>W_p(\mu, \nu) := \left( \inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2) \right)^{1/p}<br>$$<br>は距離になるが、これを<a href="https://en.wikipedia.org/wiki/Wasserstein_metric" target="_blank" rel="noopener">Wasserstein距離</a>という（注1）。</p>
+<p>$\mu$と$\nu$のKLダイバージェンスを$D(\mu, \nu)$と書く（定義は下）。この記事でいう輸送不等式というのは、次のようなものである：<br>任意の確率測度$\nu$に対して、不等式<br>$$<br>W_p^p(\mu, \nu) \leq \sqrt{C D(\mu, \nu)}<br>\tag{1}<br>$$<br>が成り立つとき、$\mu$は輸送不等式$T_p(C)$をみたすという。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/04/08/201604-transport-ineq/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-25T11:07:49.000Z"><a href="/blog/2016/03/25/20160325-generic-chaining-2/">2016-03-25</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/03/25/20160325-generic-chaining-2/">Generic Chaining (2)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="連鎖-Chaining"><a href="#連鎖-Chaining" class="headerlink" title="連鎖 (Chaining)"></a>連鎖 (Chaining)</h1><p><a href="http://ktrmnm.github.io/blog/2016/03/23/20160322-generic-chaining-1/">前回</a>の続き。</p>
+<p>このノートの落とし所としては次のようなものを想定している：</p>
+<ul>
+<li>確率過程の最大値をバウンドするためのchainingという技術がある</li>
+<li>chainingで得られるバウンドが非最適な場合がある</li>
+<li>generic chainingという技術を使うとそのギャップが埋まる</li>
+</ul>
+<p>でも今回は、chainingについて書いたら力つきて終わりそうだ。</p>
+<h1 id="距離エントロピー"><a href="#距離エントロピー" class="headerlink" title="距離エントロピー"></a>距離エントロピー</h1><p>$(T, d)$ を擬距離空間とする。$d$ で $T$ の大きさをはかり、それが $T$ 上の確率過程の最大値に与える影響が知りたいのだった。</p>
+<p>大きさのはかり方としてここで想定しているのは、</p>
+<ul>
+<li>半径 $\epsilon$ の球が最低いくつあれば $T$ を覆うことができるか ($\epsilon$-netの最小数)</li>
+<li>半径 $\epsilon$ の球を最大いくつ $T$ の中に押し込めるか ($\epsilon$-packingの最大数)</li>
+</ul>
+<p>といったもので、前者を<strong>被覆数</strong> (covering number)、後者を<strong>パッキング数</strong> (packing number)という。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/03/25/20160325-generic-chaining-2/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-23T11:39:00.000Z"><a href="/blog/2016/03/23/20160322-generic-chaining-1/">2016-03-23</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/03/23/20160322-generic-chaining-1/">Generic Chaining (1)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p>学習理論や機械学習周辺を勉強していると、しばしば「確率過程の最大値」というものが出てくる。確率過程といっても色々あるものの、主に興味があるのは<a href="https://en.wikipedia.org/wiki/Empirical_process" target="_blank" rel="noopener">経験過程</a>とその極限として出てくる<a href="https://en.wikipedia.org/wiki/Gaussian_process" target="_blank" rel="noopener">ガウス過程</a>の2つだ。これらは、「リスクの挙動が知りたい」「M推定量の一致性が知りたい」といった統計的なモチベーションに関係してくる。</p>
+<p>このノートでは、確率過程の最大値の測り方についての、比較的つっこんだ内容を数回に分けて書こうと思う。</p>
+<h2 id="ノートの趣旨"><a href="#ノートの趣旨" class="headerlink" title="ノートの趣旨"></a>ノートの趣旨</h2><p><strong>Generic chaining</strong>と呼ばれるものに関して知られている結果を、証明抜きで並べようと思う。</p>
+<h2 id="Generic-chainingとは何をするためのものか"><a href="#Generic-chainingとは何をするためのものか" class="headerlink" title="Generic chainingとは何をするためのものか"></a>Generic chainingとは何をするためのものか</h2><p>経験過程やガウス過程の最大値は、添え字の空間が大きすぎると暴れる。</p>
+<p>平均0の確率過程 $(X_t)$ があるとき、添え字の空間には $(X_t)$ の相関構造をもとに擬距離が入る。ところがその距離の意味で添え字の空間が大きすぎると、$\sup_t |X_t|$ は発散してしまう。大きさの測り方はいろいろあるのだが、基本的には全有界性のようなものがコントロールされていることが望ましい。例えば、カバリングナンバー ($\epsilon$ を固定したときの $\epsilon$-netの要素数の最小値) が大きすぎないことが条件になる。</p>
+<p>逆に、「添字空間の大きさを測る尺度」によって確率過程の最大値をタイトに評価できることが知られている。</p>
+<p>そこでようやく表題の概念が出てくる。<br>ワンセンテンスで言えば、Generic chainingというのは、<strong>確率過程の最大値を添字空間の大きさを使って評価するやり方のなかで、とりわけ高級なもの</strong>である。同目的のテクニックに連鎖 (chaining) という名前がついているものがまずあって、それをさらに一般化したものなのでこういう名前がついている。</p>
+<p>結論の一部を先取りすると、距離の入った添字空間 $(T, d)$ の複雑さの尺度を、次のような量で測る：<br>$$<br>\gamma_2(T, d) := \inf \sup_{t \in T} \sum_{n=0}^\infty 2^{n/2} d(t, T_n)<br>$$<br>$T_n$ というのは $T$ の「代表点の集合」で、基本的には $n=0,1,\ldots$ とともに要素数が増えていく。だんだん解像度を上げていく感じだ。$T_n$ 要素数の増え方にはある程度制限がかかっていて、$\inf$ はそのような $T_n$ の全体にわたってとる。<br>このように定義した $\gamma_2$ という謎の量が、なぜかガウス過程のsupの性質をとてもよく捉えている。</p>
+<p>これがしかしどの程度重要な概念かというと、言ってしまえばマニアックな知識だ。機械学習の論文を読む人間の95%にとって必要にならない程度だと思う。それでも、例えば昨年 (2015年) のNIPSにもそれ自体をテーマにした論文が通っていたりして、やっている人はやっている。つまり、この知識が必要になる残りの5%とは、学習理論をやっている人間のことである。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/03/23/20160322-generic-chaining-1/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-21T18:11:22.000Z"><a href="/blog/2016/03/22/math-test/">2016-03-22</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/03/22/math-test/">MathJax数式についてのメモ</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p><a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>でブログを生成した。MathJaxのプラグインもあるため、LaTeXの数式を労力なく書けそうだからである。</p>
+<p>とはいえ、MathJaxでものを書くのは初めてだ。ここではHexoプラグインの導入方法と、MathJaxの記述方法についてまとめておく。（2016/3/22現在）</p>
+<h2 id="プラグイン導入"><a href="#プラグイン導入" class="headerlink" title="プラグイン導入"></a>プラグイン導入</h2><p><a href="https://github.com/akfish/hexo-math" target="_blank" rel="noopener">hexo-math</a>プラグインを利用することにした。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-math --save</span><br></pre></td></tr></table></figure></p>
+<p>でインストールし、Hexoプロジェクトの設定ファイル <code>_config.yml</code> に以下を記述する:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">math:</span><br><span class="line">  engine: &apos;mathjax&apos;</span><br><span class="line">  mathjax:</span><br><span class="line">    src: http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML</span><br><span class="line">    config:</span><br><span class="line">      tex2jax:</span><br><span class="line">        inlineMath: [ [&apos;$&apos;,&apos;$&apos;], [&quot;\\(&quot;,&quot;\\)&quot;] ]</span><br><span class="line">        displayMath: [ [&apos;$$&apos;,&apos;$$&apos;], [&quot;\\[&quot;,&quot;\\]&quot;] ]</span><br></pre></td></tr></table></figure></p>
+<h2 id="基本的な記述"><a href="#基本的な記述" class="headerlink" title="基本的な記述"></a>基本的な記述</h2><p>行内数式はLaTeXと同様で <code>$ f(x) = x^2 $</code>のように書けばよい: $f(x)=x^2$.<br>別行立てで書くには <code>$$</code> で挟んで書く。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$$</span><br><span class="line">\mathbb&#123;E&#125; \max_&#123;s,t\in S: d(s,t) \leq \delta&#125; |X(t)-X(s)| \leq (16 \sqrt&#123;2&#125; + 2)</span><br><span class="line">\int_0^\delta \sqrt&#123;\log 2N(T, d, \varepsilon)&#125; \mathrm&#123;d&#125;\varepsilon</span><br><span class="line">\tag&#123;999&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure></p>
+<p>$$<br>\mathbb{E} \max_{s,t\in S: d(s,t) \leq \delta} |X(t)-X(s)| \leq (16 \sqrt{2} + 2)<br>\int_0^\delta \sqrt{\log 2N(T, d, \varepsilon)} \mathrm{d}\varepsilon<br>\tag{999}<br>$$</p>
+<p>なるほどなあ。むしろ、何ができないのか試したくて<code>\mathbb{E}</code>などを試したのだが、普通に使えるようなのでありがたい。これで$\mathbb{R}$とか$\mathbb{Z}$なども使い放題である。その他に使えるLaTeXコマンドの一覧は<a href="http://mathjax.readthedocs.org/en/latest/tex.html" target="_blank" rel="noopener">MathJaxのドキュメント</a>に載っている。</p>
+<h2 id="マクロ"><a href="#マクロ" class="headerlink" title="マクロ"></a>マクロ</h2><p>MathJaxではマクロも定義できるが、今回は必要に応じて次のように書けばよい。YAMLなせいか心持ちすっきりと書けている気がする。<br><figure class="highlight plain"><figcaption><span>_config.yml</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">math:</span><br><span class="line">  engine: &apos;mathjax&apos; # or &apos;katex&apos;</span><br><span class="line">  mathjax:</span><br><span class="line">    src: http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML</span><br><span class="line">    config:</span><br><span class="line">      tex2jax:</span><br><span class="line">        inlineMath: [ [&apos;$&apos;,&apos;$&apos;], [&quot;\\(&quot;,&quot;\\)&quot;] ]</span><br><span class="line">        displayMath: [ [&apos;$$&apos;,&apos;$$&apos;], [&quot;\\[&quot;,&quot;\\]&quot;] ]</span><br><span class="line">      TeX:</span><br><span class="line">        Macros:</span><br><span class="line">          dd: \mathrm&#123;d&#125;</span><br><span class="line">          RR: \mathbb&#123;R&#125;</span><br><span class="line">          argmax: \operatorname*&#123;argmax&#125;</span><br></pre></td></tr></table></figure><br>例えば上では<code>\argmax</code>を定義したので次のように書ける：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$$</span><br><span class="line">\argmax_&#123;t \in T&#125; f(t)</span><br><span class="line">$$</span><br></pre></td></tr></table></figure></p>
+<p>$$<br>\argmax_{t \in T} f(t)<br>$$</p>
+<h2 id="Hexo特有の記法"><a href="#Hexo特有の記法" class="headerlink" title="Hexo特有の記法"></a>Hexo特有の記法</h2><p>ところで、Hexoにはこれとは別に<a href="https://hexo.io/docs/tag-plugins.html" target="_blank" rel="noopener">Hexo記法</a>というものが存在し、次のように書くことで同様の結果が得られる。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;% math %&#125;</span><br><span class="line">\mathbb&#123;E&#125; \max_&#123;s,t\in S: d(s,t) \leq \delta&#125; |X(t)-X(s)| \leq (16 \sqrt&#123;2&#125; + 2)</span><br><span class="line">\int_0^\delta \sqrt&#123;\log 2N(T, d, \varepsilon)&#125; \mathrm&#123;d&#125;\varepsilon</span><br><span class="line">&#123;% endmath %&#125;</span><br></pre></td></tr></table></figure></p>
+<span>$$\mathbb{E} \max_{s,t\in S: d(s,t) \leq \delta} |X(t)-X(s)| \leq (16 \sqrt{2} + 2)
+\int_0^\delta \sqrt{\log 2N(T, d, \varepsilon)} \mathrm{d}\varepsilon$$</span><!-- Has MathJax -->
+<p>ただし、hexo-mathの現在の仕様では、mathブロックの中に単一の行しかないときはインライン数式、それ以外はディスプレイ数式として勝手に解釈される。個人的にはちょっと不便だなとも思う。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<nav id="pagination">
+  
+    <a href="/blog/" class="alignleft prev">Prev</a>
+  
+  
+  <div class="clearfix"></div>
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

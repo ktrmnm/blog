@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>[意訳] FOCS著者へのアドバイス (CS理論系論文の書き方) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="この文章は、Boaz Barak教授 (現: Harvard大) による2014年のブログAdvice for FOCS authorsを意訳したものです。
+FOCSは、STOCなどと並ぶコンピュータサイエンスの理論系トップ会議です。情報系の分野ではなぜか、国際会議に採択されることがメインの業績とし">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="[意訳] FOCS著者へのアドバイス (CS理論系論文の書き方)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2017-01-30T13:55:39.000Z"><a href="/blog/2017/01/30/201701-focs-advice/">2017-01-30</a></time>
+      
+      
+  
+    <h1 class="title">[意訳] FOCS著者へのアドバイス (CS理論系論文の書き方)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>この文章は、Boaz Barak教授 (現: Harvard大) による2014年のブログ<br><a href="https://windowsontheory.org/2014/02/09/advice-for-focs-authors/" target="_blank" rel="noopener">Advice for FOCS authors</a><br>を意訳したものです。</p>
+<p>FOCSは、STOCなどと並ぶコンピュータサイエンスの理論系トップ会議です。情報系の分野ではなぜか、国際会議に採択されることがメインの業績として扱われることが多いです。（論文が論文誌に投稿されないので、他分野から見ると「え、何で論文書いてないの」のような反応がしばしば見受けられます。）</p>
+<p>しかし、情報系と一口に言っても、研究の進むスピードは分野によってさまざまです。<br>機械学習などでは、分野としては非常に速いスピードでトレンドが流れていく印象があります。近年は深層学習ブームと言われていますが、arXivに投稿した論文が次の日に他のグループによって引用されている、というような極端な話を方々で耳にします。そういった時間感覚を持つ分野では、年に一度や二度の国際会議ですら情報の速報性が足りない、ということを言う人もいます。</p>
+<p>こういった、「イケてる・速い・競争的・採択率低い」世界に論文を通す技術として、どうやらある特定の方向性のプレゼンテーション能力が要求されてるっぽいぞ、というコンセンサスがなんとなく共有されているように思います。<br>例えば、下記のredditは一時期流行ったものです。<br><a href="https://www.reddit.com/r/MachineLearning/comments/3x3urc/tips_on_publishing_in_nips_icml_or_any_top_tier/cy1aw8o/" target="_blank" rel="noopener">Tips on publishing in NIPS, ICML or any top tier conferences for ML</a><br>内容はほぼほぼ自虐ネタですが、うかつに無視できない部分があったりして大変つらい。<br>個人的に心が痛いのは2と3でして、</p>
+<ul>
+<li>機械学習トップ会議に通すには定理は1つか2つあったほうがいい。内容は問わない。査読者は定理が好きだから。</li>
+<li>数学はいいぞ。でもバランスが必要で、数式が多すぎてはだめ。もし数式が多すぎるならCOLT（注：学習理論の会議）に投稿すべきだ。もし数式がないなら、シグモイドとかソフトマックス関数の定義式を別行立て数式で載せときゃいい。</li>
+</ul>
+<p>とのこと。</p>
+<p>一方、理論系のコミュニティに目を向けると、かなり違う印象を受けます。</p>
+<p>CSの理論研究は基本的には「定理と証明」の地道な繰り返しによって成り立っています。よって、どちらかというと数学系の論文誌と似たような精度で、数学的なステートメントの正しさが検証されます。（応用研究では証明が検証されない、という意味ではないです。）<br>それにもかかわらず、学会の開催頻度は情報系の他の分野と同じです。このため、投稿者はハードな締め切りまでに理論的な貢献を含む論文を書かなければならず、査読者も、一年のある期間に集中して大量の論文を読まなければならないという現象が起きていると考えられます。</p>
+<p>表題のブログは、私が把握している限りでは、CS分野の理論研究の論文を書くにあたっての注意点を紹介している数少ない記事でした。特に、<strong>情報系の会議文化のなかで、定理と証明が主体の論文を書くというのはどういうことか</strong> ということがわかって、個人的には勉強になっています。</p>
+<p>以下は引用です。本記事では、導入とサマリーを除いた主要な部分のみを意訳しています。</p>
+<h1 id="読者のことを考える"><a href="#読者のことを考える" class="headerlink" title="読者のことを考える"></a>読者のことを考える</h1><p>FOCSの投稿論文、そして任意の科学論文を書くにあたって最もチャレンジングなことのひとつは、様々なタイプの読者に同時に対処することです。網羅的ではありませんが、次のようなタイプの読者が含まれると思ってください。</p>
+<p>(1) その分野の専門家。あなたのアプローチが彼らの2007年の論文と比べてどう異なるのか、全て詳細に検証したい読者です。<br>(2) 専門家ではない査読者。あなたのやったことは何なのか、なぜその問題が解きたいのか、論文で使われているテクニックに関して、何らかのとっかかりを掴みたい読者です。<br>(3) あなたの論文にアサインされたPCメンバー。論文を数分間だけ流し読みして、上記の内容の近似を得たい読者です。</p>
+<p>これらの異なる読者に対処するためのおおよその方針としては、<strong>前半の数セクションはコンピュータサイエンス理論の一般的な読者でも理解できるように書き、専門家に向けた詳細は後半のセクションに含まれるようにする</strong> ことです。この方針は次の視点を導きます。</p>
+<h1 id="全力を出せ-Put-your-best-foot-forward"><a href="#全力を出せ-Put-your-best-foot-forward" class="headerlink" title="全力を出せ (Put your best foot forward)"></a>全力を出せ (Put your best foot forward)</h1><p>(2014年現在) FOCSにはページ数制限はありませんが、査読者も投稿論文の全てを読まなくてよい規定になっています。これが実際に意味するところは、私が「Impagliazzoのルール」と呼んでいるものに従うべきということです。つまり、<strong>任意のXに対して、論文の最初のXページを、読者が次のXページを読みたくなるように書く</strong> べきです。</p>
+<p>特に、あなたの結果、テクニック、研究の動機、研究が置かれている文脈、および先行研究と比較した新規性が、論文中の早い段階で明確に述べられるように心がけるべきです。もし、主定理を簡潔に述べるのが難しいならば、その主定理の正式でない版または重要な具体例をまず述べて、完全なステートメントが書いてある箇所を後方参照する、という方法があります。</p>
+<p>上の方法は結果だけでなくテクニックについても適用できます。あなたの素晴らしいアイデアを、テクニカル・セクションまで取っておく必要はありません。最もよく書けている論文の中には、イントロに続いて “Our techniques”, “Proof outline”, “Warmup”, “Toy problem” といった章が設けてあることがあり、証明の背後にあるアイデアを非正式な形でわかりやすく説明しています。</p>
+<p>謙虚さは良いことですが、FOCSの投稿にあたってはそれを徹底する必要はありませんし、あなたの貢献を論文の端っこの方に隠してしまう必要はないのです。逆に、貢献を喧伝しすぎるということも、もちろんしたくありません。</p>
+<p>というわけで…</p>
+<h1 id="さらけ出せ-Put-your-worst-foot-forward"><a href="#さらけ出せ-Put-your-worst-foot-forward" class="headerlink" title="さらけ出せ (Put your worst foot forward)"></a>さらけ出せ (Put your worst foot forward)</h1><p>科学者としては、自分の研究内容について欠陥の可能性・注意点・改善の余地がちゃんと見えるように身をかがめる姿勢をとりたいものです。FOCSの著者にもその姿勢が欠けていないことを期待します。</p>
+<p>主結果がとても制限された状況でしか成り立たない、ということが、論文のSection 4を読んだ段階でようやく発覚したりすると、査読者にとってはめちゃくちゃ腹が立ちます。すべての制限・注意点・仮定・限界は論文の早い段階で述べられるべきです。実際、いくつかの注意点は非常にメジャーなので、イントロで言及してもまだ遅いということがあります。例えば、あなたが単調回路 (monotone circuit) でのみ成立する下界を証明した場合、アブストラクトではっきりとそう書くだけでなく、monotone という単語をタイトルに入れるべきです。一般的に、問題をより簡単にするためのモデルの仮定を選んだならばそれについて議論すべきで、別のモデルを選んだ場合にどのような変更点が生じるか説明すべきです。</p>
+<p>同様に、先行研究との任意の関係およびオーバーラップは論文の早い段階で述べるべきです。もし、結果が先行研究の一般化であるならば、それらがどのように異なるのか、また、そのような一般化を行う動機について説明しましょう。結果があるパラメータについては改善になっているが、他のパラメータについては改善になっていないのであれば、それらの重要性についての議論を行うことが適切です。関連研究の存在を知っているならば、それが仮に出版されていなかったり、あなたの仕事の後になされていたとしても、なおも引用した上で、それらの関連性や前後関係を説明しましょう。</p>
+<h1 id="疑わしきを排除せよ"><a href="#疑わしきを排除せよ" class="headerlink" title="疑わしきを排除せよ"></a>疑わしきを排除せよ</h1><p>科学論文は小説ではありません。理想的には、読者が疑いの中にとどまってしまうことや、良い意味でも悪い意味でも驚きが生じたりすることは、起こらないべきです。FOCSのPCメンバーは信じられないくらい才能のある集団ですが、それでもなお、読者が抱きそうなすべての疑問点と誤解を予測しつつ “foolproof” なやり方で論文が書かれるべきです。（特に、限られた時間のなかで40本もの論文を査読しなければならないような読者についてはそうです）。</p>
+<p>例えばですが、査読コメントに「主定理の証明はXを使えば非常に簡易化できるだろう」と書いてあって、しかしそのXというのがあなたが最初に試してみてうまくいかなかった方法だったりすると、著者にとっては非常に腹立たしいことだと思います。これを避けるには、 “First attempt” というタイトルの章を設けてXについて議論し、なぜうまくいかないか説明するという方法があります。同様に、一見するとあなたの仕事に関係がありそうだが実際には関係がない論文が存在する場合は、それをなお引用して、なぜ「実際には関係がない」のか説明するべきです。</p>
+<p>他には、査読が「シンプルすぎるのでリジェクト」っぽいことを述べているときもムカつきますね。私や他のFOCS PCメンバーは単純さは美徳であると信じていますから、それが原因でリジェクトにすることはありません。しかし、論文が単純すぎて査読者に驚かれるということを避けたいのであれば、証明が先行研究のものに対して「3行の短縮」になっていることを論文の後半のほうで議論します。もし証明が単純なのであれば、それは誇るべきことなので初めからそう言いましょう。もし特定の補題の証明が標準的な手法におけるルーチンの適用であるならば、それは削らずに書くかappendixに移動しましょう。ただし、この場合は証明の最初の部分でそのことを説明し、詳細を追うことをあまり目的としていない査読者が読み飛ばせるようにしましょう。このことは他の場合にも当てはまります。証明中に奇抜な飛躍点 / 些細な点があるならば、そうであることを告げる文章を追加して読者にわかるようにしましょう。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2017-1/">2017/1</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/個人用メモ/">個人用メモ</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

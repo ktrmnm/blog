@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>輸送不等式の双対 | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="ひとことまとめ輸送不等式の双対表現がおもしろかったので。
+輸送不等式最適輸送 (optimal transport) というジャンルがある。元々どういう問題なのかは[1]などに譲るとするが、最適輸送で出てくる色々なツールが、他の問題を考えるときにも色々と有益だということが知られていて、確率論の別のジャンルでもしばしば使われる。
+$(X, d)$を距離空間とする。$\mu, \nu$を$X$上の (Borel) 確率測度とする。$X^2$上の確率測度$\pi$で、軸方向への周辺分布がそれぞれ$\mu$と$\nu$に等しいようなものをカップリングという。
+カップリングは、「輸送計画」みたいなものに相当する。つまり、$X$という空間上にある$\mu$という山を切り崩して$\nu$という山に移し替えたい。どの部分を切り取ってどこに持っていくかということを表したものが$\pi$である。ところが、山を切り崩して移動するというのをタダで行えるわけではない。$X$上の点$x_1$から$x_2$に荷物を運ぶのに、$x_1$と$x_2$の距離が遠いほど多くコストがかかるかかるという状況を考える。沖縄などの地域で通販の送料が無料にならなかったりするのはそういう理由だろう（沖縄に住んでいらっしゃる方はすみません）。例えば、単位体積を$x_1$から$x_2$に運ぶのに、$d^p(x_1, x_2)$円かかるとする。このとき、全体での輸送コストは$$\int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)$$のと書ける。このコストを最小化するように輸送計画を設計しようというのが、最適輸送という問題である。
+上の最小値を$$\inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)$$とする。実は、輸送するためのコストが最小限いくらかかるかで、確率測度のあいだの距離が測れる。実際、$$W_p(\mu, \nu) := \left( \inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2) \right)^{1/p}$$は距離になるが、これをWasserstein距離という（注1）。
+$\mu$と$\nu$のKLダイバージェンスを$D(\mu, \nu)$と書く（定義は下）。この記事でいう輸送不等式というのは、次のようなものである：任意の確率測度$\nu$に対して、不等式$$W_p^p(\mu, \nu) \leq \sqrt{C D(\mu, \nu)}\tag{1}$$が成り立つとき、$\mu$は輸送不等式$T_p(C)$をみたすという。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="輸送不等式の双対">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-04-07T15:00:00.000Z"><a href="/blog/2016/04/08/201604-transport-ineq/">2016-04-08</a></time>
+      
+      
+  
+    <h1 class="title">輸送不等式の双対</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="ひとことまとめ"><a href="#ひとことまとめ" class="headerlink" title="ひとことまとめ"></a>ひとことまとめ</h1><p>輸送不等式の双対表現がおもしろかったので。</p>
+<h1 id="輸送不等式"><a href="#輸送不等式" class="headerlink" title="輸送不等式"></a>輸送不等式</h1><p>最適輸送 (optimal transport) というジャンルがある。元々どういう問題なのかは[1]などに譲るとするが、最適輸送で出てくる色々なツールが、他の問題を考えるときにも色々と有益だということが知られていて、確率論の別のジャンルでもしばしば使われる。</p>
+<p>$(X, d)$を距離空間とする。$\mu, \nu$を$X$上の (Borel) 確率測度とする。$X^2$上の確率測度$\pi$で、軸方向への周辺分布がそれぞれ$\mu$と$\nu$に等しいようなものを<strong>カップリング</strong>という。</p>
+<p>カップリングは、「輸送計画」みたいなものに相当する。つまり、$X$という空間上にある$\mu$という山を切り崩して$\nu$という山に移し替えたい。どの部分を切り取ってどこに持っていくかということを表したものが$\pi$である。<br>ところが、山を切り崩して移動するというのをタダで行えるわけではない。$X$上の点$x_1$から$x_2$に荷物を運ぶのに、$x_1$と$x_2$の距離が遠いほど多くコストがかかるかかるという状況を考える。沖縄などの地域で通販の送料が無料にならなかったりするのはそういう理由だろう（沖縄に住んでいらっしゃる方はすみません）。例えば、単位体積を$x_1$から$x_2$に運ぶのに、$d^p(x_1, x_2)$円かかるとする。このとき、全体での輸送コストは<br>$$<br>\int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)<br>$$<br>のと書ける。このコストを最小化するように輸送計画を設計しようというのが、最適輸送という問題である。</p>
+<p>上の最小値を<br>$$<br>\inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2)<br>$$<br>とする。実は、輸送するためのコストが最小限いくらかかるかで、確率測度のあいだの距離が測れる。実際、<br>$$<br>W_p(\mu, \nu) := \left( \inf_\pi \int_{X^2} d^p(x_1, x_2) \dd \pi(x_1, x_2) \right)^{1/p}<br>$$<br>は距離になるが、これを<a href="https://en.wikipedia.org/wiki/Wasserstein_metric" target="_blank" rel="noopener">Wasserstein距離</a>という（注1）。</p>
+<p>$\mu$と$\nu$のKLダイバージェンスを$D(\mu, \nu)$と書く（定義は下）。この記事でいう輸送不等式というのは、次のようなものである：<br>任意の確率測度$\nu$に対して、不等式<br>$$<br>W_p^p(\mu, \nu) \leq \sqrt{C D(\mu, \nu)}<br>\tag{1}<br>$$<br>が成り立つとき、$\mu$は輸送不等式$T_p(C)$をみたすという。</p>
+<a id="more"></a>
+<p><a href="https://en.wikipedia.org/wiki/Pinsker%27s_inequality" target="_blank" rel="noopener">Pinskerの不等式</a>は輸送不等式の例になっている。というのも実は、<a href="https://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures" target="_blank" rel="noopener">全変動距離</a>はハミング距離$d(x,y) = 1_{ x \neq y }$に対するWasserstein距離とみなせる。<br>$$<br>\lVert \mu - \nu \rVert_\mathrm{TV} = \sup |\mu(A) - \nu(A)| = \inf_\pi \int 1_{ x \neq y} \dd \pi(x,y)<br>$$<br>だから上の表記でいえばPinskerの不等式<br>$$<br>\lVert \mu - \nu \rVert_\mathrm{TV} \leq \sqrt{\frac{1}{2} D(\mu, \nu)}<br>$$<br>は$T_1(1/2)$ということになる。</p>
+<p>$T_2(C)$にも有名な例がある。<br>$\mathbb{R}^n$に通常のEuclid距離を入れた空間を考える。$n$次元標準正規分布$\gamma_n$について、Talagrandの輸送不等式<br>$$<br>W_2^2(\nu, \gamma_n) \leq \sqrt{2 D(\nu, \gamma_n)}<br>$$<br>が成り立つことが知られている。上の表記でいうと、$\gamma_n$は$T_2(2)$をみたすということになる。</p>
+<p>ところで、$T_p(C)$には双対表現というべき等価な不等式があって、それを導出するのに色々な双対が出てきておもしろい。</p>
+<h1 id="いろんな双対"><a href="#いろんな双対" class="headerlink" title="いろんな双対"></a>いろんな双対</h1><p>最適輸送コストとKLダイバージェンスには、それぞれの文脈から出てきた双対公式がある。<br>世の中にはいろんな双対があるなあ（詠嘆）。</p>
+<h2 id="Kantrovich双対性"><a href="#Kantrovich双対性" class="headerlink" title="Kantrovich双対性"></a>Kantrovich双対性</h2><p>$C_b(X)$を$X$上の有界連続関数の全体とする。<br>最適輸送コストについて、次のような等式が成り立つ。<br>$$<br>\begin{align}<br>W^p_p(\mu, \nu) &amp; = \inf_\pi \int_{X^2} d^p(x, y) \dd \pi(x, y) \\<br>&amp; = \sup \left \{<br>\int f(x) \dd \mu(x) + \int g(y) \dd \nu(y) :\; f, g \in C_b(X), \; f(x) + g(y) \leq d^p(x, y)<br>\right \}<br>\end{align}<br>\tag{2}<br>$$<br>これをKantrovich双対性という。最適化がわかる人向けにいうと、最適輸送問題の双対問題は<br>$$<br>\begin{align}<br>\max \quad &amp; \int f(x) \dd \mu(x) + \int g(y) \dd \nu(y) \\<br>s.t. \quad &amp; f(x) + g(y) \leq d^p(x, y)<br>\end{align}<br>$$<br>みたいなものに相当するらしく、しかも相補性が成り立つらしい。</p>
+<h2 id="KLダイバージェンス"><a href="#KLダイバージェンス" class="headerlink" title="KLダイバージェンス"></a>KLダイバージェンス</h2><p>$\mu$と$\nu$のKLダイバージェンスを<br>$$<br>D(\mu, \nu) = \int \log \frac{\dd \mu}{\dd \nu} \dd \mu<br>$$<br>と定義する。ただし、$\mu \ll \nu$でないときは$+\infty$とする。KLダイバージェンスには次のような双対公式がある。<br>$$<br>\log \int \exp(f(x)) \dd \nu(x) = \sup_{\mu: \; \mu \ll \nu} \left( \int f(x) \dd \mu  - D(\mu, \nu) \right)<br>\tag{3}<br>$$<br>Donsker-Varadhanの変分公式ともいうらしい。ちなみに<a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods" target="_blank" rel="noopener">変分ベイズ</a>の原理とかはこれにとても近い。KLを最小化したければ双対表現を最小化すればいいじゃない、という発想。</p>
+<p>また、今回は使わないが、<br>$$<br>D(\mu, \nu) = \sup_{f \in C_b(X)} \left \{<br>\int f(x) \dd\mu(x) - \log \int \exp(f(x)) \dd \nu(x)<br>\right \}<br>\tag{4}<br>$$<br>という双対公式も存在する[3]。</p>
+<h2 id="ルジャンドル変換"><a href="#ルジャンドル変換" class="headerlink" title="ルジャンドル変換"></a>ルジャンドル変換</h2><p>道行く人に「あなたの好きな双対は何ですか」と聞いてまわったらFenchel双対はベスト5くらいに入るんじゃないか。</p>
+<p>それはさておき、下でちょっと使うので、つまらない例だけれど復習しておく。<br>$x \geq 0$で定義された凸関数$h(x) = a x^2$ ($a &gt; 0$) の<a href="https://ja.wikipedia.org/wiki/ルジャンドル変換" target="_blank" rel="noopener">ルジャンドル変換</a>は</p>
+<p>$$<br>h^{*}(y) = \max_{y \geq 0} (xy - h(x)) = \frac{y^2}{4a}<br>$$<br>である。<br>凸関数のルジャンドル変換のルジャンドル変換は元に戻る。<br>$$<br>h^{**}(x) = \max_{x \geq 0} (yx - h^*(y)) = ax^2 = h(x)<br>$$</p>
+<h1 id="輸送不等式の双対"><a href="#輸送不等式の双対" class="headerlink" title="輸送不等式の双対"></a>輸送不等式の双対</h1><p>Kantrovich双対とKLダイバージェンスの双対とを合わせることで、輸送不等式の双対形が得られる。<br>もともと$T_p(C)$というのは「すべての確率測度についてhoge」という主張だったのだが、双対形のほうは「すべての有界連続関数についてpiyo」という主張になる。</p>
+<p><strong>定理</strong><br>$\mu$が$T_p(C)$を満たすことは次のことと同値である：<br>任意の$f, g \in C_b(X)$ s.t. $f(x) + g(y) \leq d^p(x, y)$に対して、<br>$$<br>\forall t \geq 0, \quad \int \exp(tf(x)) \dd \mu(x)<br>\leq \exp \left( - t \int g(x)\dd \mu + \frac{Ct^2}{4} \right).<br>$$</p>
+<p><strong>証明</strong><br>Kantrovich双対性(2)より、$T_p(C)$であることと、任意の$f, g \in C_b(X)$ s.t. $f(x) + g(y) \leq d^p(x, y)$および任意の$\nu$に対して、<br>$$<br>C^{-1}\left( \int f(x) \dd \nu(x) + \int g(y) \dd \mu(y) \right)^2 \leq D(\nu, \mu)<br>\tag{5}<br>$$<br>が成り立つことと同値である。<br>$h(x) = C^{-1}x^2$のルジャンドル変換を考えることにより、$h(x) = \sup_t (tx - Ct^2/4)$であるから、(5)は<br>$$<br>\forall t \geq 0, \int tf(x) \dd \nu(x) - D(\nu, \mu) \leq -\int tg(x) \dd \mu(x) + \frac{Ct^2}{4}<br>$$<br>と同値である。<br>Donsker-Varadhanの公式(4)より、左辺を$\nu$について最適化すると、<br>$$<br>\log \int \exp(tf(x))\dd \mu(x) \leq -\int tg(x) \dd \mu(x) + \frac{Ct^2}{4}<br>$$<br>であるから示された。</p>
+<p>証明は[3]を参考にした。$p = 1, 2$の場合は[2]が初出とのこと。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Villani. Optimal Transport: Old and new, Springer, 2009.<br>[2] Bobkov and Götze. Exponential integrability and transportation cost related to logarithmic Sobolev inequalities, J. Fucnt. Anal., 163(1):1–28, 1999.<br>[3] Gozlan and Leonard. Transport inequalities. A survey, Markov Processes and Related Fields, 16(4):635–736, 2010.</p>
+<p>(注1) Wasserstein距離は、他の距離的な尺度（total variation, KLダイバージェンス, etc.）と違って、$X$上の距離$d$の情報が確率測度間の距離に陽に反映されているということで、最近は機械学習の学会でもちらほら応用を見かける。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-4/">2016/4</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/確率論/">確率論</a>, <a href="/blog/tags/最適輸送/">最適輸送</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

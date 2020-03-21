@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Langevin Monte Carlo法には棄却が必要か | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="機械学習系のベイズっぽい論文を読んでいると、SGLD [WT11] やSGRLD [PT13] といった文字列を見ることがあります。これらが何かというとマルコフ連鎖モンテカルロ法 (MCMC) の一種で、正規化定数がわからない高次元の確率分布からのサンプリングを得たい場合などに使われます。
+アルゴリズムの位置づけとしては、
+
+Langevin Monte Carlo (LMC) とか Langevin Dynamics などという名前で呼ばれている既存アルゴリズムがまずあり、
+それに伴う勾配計算をサブサンプリングを利用して簡略化したものという感じです。勾配降下法 (GD) を確率的勾配降下法 (SGD) に拡張することにインスパイアされているのだったと思います。
+
+LMCのモチベーションとしてよく言われるのは、LMCでは (Metropolis–Hastings法に見られるような) 棄却ステップが必要ないということです。MHは、提案分布がうまく選べていなかったりすると棄却がたくさん発生してしまうことが知られていて、サンプリングに無駄な時間がかかってしまいます。MHの採択確率を（ほとんど）1にするというのは全ベイジアンの夢ですが、ある意味それを達成しているのがLMC系のアルゴリズムです。実際に、SGLDの元論文 [WT11] などでは、「棄却率を低くしたい」という動機がかなり強調して書いてあったりします。
+動機だけを聞くとLMCは棄却が要らないという誤解が生じる可能性があるのですが、残念ながらそういうわけではない です。実際には、見た目上は同じアルゴリズムでも、サンプルを得たい分布の性質によって棄却が必要な場合とそうでない場合が存在します（ただし、その理論的な境界線をひとことで説明するのは難しい模様です）。
+上のような知識を何度か論文で見かけたことはあったのですが、棄却せずに強行突破すると何が起きてしまうか正直よくわかってなかったです。なので実際にやってみたというのが本記事の趣旨です。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Langevin Monte Carlo法には棄却が必要か">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-08-24T22:42:16.000Z"><a href="/blog/2016/08/25/201608-lmc/">2016-08-25</a></time>
+      
+      
+  
+    <h1 class="title">Langevin Monte Carlo法には棄却が必要か</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>機械学習系のベイズっぽい論文を読んでいると、SGLD [WT11] やSGRLD [PT13] といった文字列を見ることがあります。これらが何かというとマルコフ連鎖モンテカルロ法 (MCMC) の一種で、正規化定数がわからない高次元の確率分布からのサンプリングを得たい場合などに使われます。</p>
+<p>アルゴリズムの位置づけとしては、</p>
+<ul>
+<li>Langevin Monte Carlo (LMC) とか Langevin Dynamics などという名前で呼ばれている既存アルゴリズムがまずあり、</li>
+<li>それに伴う勾配計算をサブサンプリングを利用して簡略化したもの<br>という感じです。勾配降下法 (GD) を確率的勾配降下法 (SGD) に拡張することにインスパイアされているのだったと思います。</li>
+</ul>
+<p>LMCのモチベーションとしてよく言われるのは、LMCでは (Metropolis–Hastings法に見られるような) 棄却ステップが必要ないということです。MHは、提案分布がうまく選べていなかったりすると棄却がたくさん発生してしまうことが知られていて、サンプリングに無駄な時間がかかってしまいます。MHの採択確率を（ほとんど）1にするというのは全ベイジアンの夢ですが、ある意味それを達成しているのがLMC系のアルゴリズムです。実際に、SGLDの元論文 [WT11] などでは、「棄却率を低くしたい」という動機がかなり強調して書いてあったりします。</p>
+<p>動機だけを聞くとLMCは棄却が要らないという誤解が生じる可能性があるのですが、<strong>残念ながらそういうわけではない</strong> です。実際には、見た目上は同じアルゴリズムでも、サンプルを得たい分布の性質によって棄却が必要な場合とそうでない場合が存在します（ただし、その理論的な境界線をひとことで説明するのは難しい模様です）。</p>
+<p>上のような知識を何度か論文で見かけたことはあったのですが、棄却せずに強行突破すると何が起きてしまうか正直よくわかってなかったです。<br>なので実際にやってみたというのが本記事の趣旨です。</p>
+<a id="more"></a>
+<h1 id="LMC"><a href="#LMC" class="headerlink" title="LMC"></a>LMC</h1><p>LMCの概要をラフに説明します。</p>
+<p>$U(\theta)$ を $\mathbb{R}^d$ 上のある関数として、$\exp(-U)$ に比例した密度をもつ分布からのサンプルが欲しいとします。<br>このとき、<br>$$<br>\theta_{k + 1} = \theta_{k} - h \nabla U(\theta_k) + \sqrt{2h} \xi_{k+1}<br>\tag{1}<br>$$<br>という更新式によって $\theta_k$ を得るアルゴリズムをLangevin Monte Carlo法といいます。ただし $h &gt; 0$ はステップ幅で、簡単のため固定とします。$\xi_{k+1} \sim N(0, I)$ は $d$ 次元の標準正規分布に独立に従う確率変数の実現とします。「$U$ の勾配方向に $h$ だけ降りてから分散 $2h$ の正規ノイズで摂動する」という感じです。</p>
+<p>例えば、ベイズの事後分布からのサンプリングを行いたいときは、<br>$$<br>U(\theta) = - \log p(\theta) - \sum_{i=1}^n \log p(x_i | \theta)<br>$$<br>のようなポテンシャルを考えればよいです。</p>
+<p>理論的な背景としては、拡散過程<br>$$<br>\dd X_t = - \nabla U(X_t) \dd t + \sqrt{2} \dd W_t<br>\tag{2}<br>$$<br>の定常分布が $\pi(\theta) \propto \exp(-U(\theta))$ だということが知られているので、これを離散化 (Euler–Maruyama近似) したものがLMC法に相当します。</p>
+<p>ただし、$U$ がどういう関数かによって</p>
+<ul>
+<li>(2) が定常分布を持たない</li>
+<li>(2) は定常分布を持つが、その離散化 (1) が定常分布を持たない</li>
+</ul>
+<p>というケースが発生し、アルゴリズムがうまく動かない場合があります。それを実験で確かめたいです。</p>
+<h1 id="うまく動く場合-t分布"><a href="#うまく動く場合-t分布" class="headerlink" title="うまく動く場合 (t分布)"></a>うまく動く場合 (t分布)</h1><p>1次元で実験します。自由度1の<a href="https://ja.wikipedia.org/wiki/T分布" target="_blank" rel="noopener">Studentのt分布</a> の密度関数を $f$ とすると<br>$$<br>U(x) = - \log f(x) = \log (1 + t^2) + const.<br>$$<br>と書けます。これを (1) 式に突っ込んでシミュレーションを回すとt分布からのサンプルが得られるはずです。</p>
+<p>やってみるとこんな感じになります。左が生成されたパス、右がサンプルのヒストグラムです。うまくいっている気がします。</p>
+<img src="/blog/2016/08/25/201608-lmc/t_dist.png" title="t分布に対するLMC">
+<h1 id="うまく動かない場合1"><a href="#うまく動かない場合1" class="headerlink" title="うまく動かない場合1"></a>うまく動かない場合1</h1><p>$$<br>\pi_{1/2} (x) = \frac{1}{4} \exp(- \sqrt{|x|})<br>$$<br>という分布を考えます。Laplace分布よりもっと裾が重い分布になります。</p>
+<p>この分布に対して何も考えずにLMCを動かしてみると、見事にパスが発散します。</p>
+<img src="/blog/2016/08/25/201608-lmc/nonergodic.png">
+<p>実は、この分布に形式的に対応する $U = -\log \pi_{1/2}$ を考えると、実は (2) の連続時間の確率過程すら定常分布を持たないことがわかります。こういうときはLMC系の手法を諦める事案だと思われます。</p>
+<h1 id="うまく動かない場合2"><a href="#うまく動かない場合2" class="headerlink" title="うまく動かない場合2"></a>うまく動かない場合2</h1><p>さらに、もうちょっと微妙な、できそうなのにできないケースがあります。</p>
+<p>$$<br>\pi_4 (x) = \frac{\exp(- x^4)}{2 \Gamma(5/4)}<br>$$<br>という分布を考えます。正規分布よりも裾が軽い分布になります。そのまま (1) 式に突っ込むのであれば、 $\nabla \log U(x) = -4 x^3$ とすればよいはずです。</p>
+<p>この場合は (2) の確率過程は定常分布を持ち、それは $\pi_4$ に一致します。ですので、LMCも動いて欲しい気がします。</p>
+<p>ところが実際にやってみると、どのようにステップ幅を設定しても、最初はうまくいっているかと思いきや途中でいきなり発散して終わります。<br><img src="/blog/2016/08/25/201608-lmc/transient.png"></p>
+<p>実はこのケースでは、Euler–Maruyama法がエルゴード性を持たない (=収束しない) ということが理論的に示唆されています [RT96]。 数学的な条件としては、$\nabla U$ がLipschitzでないことがおそらく問題になっています。</p>
+<h1 id="棄却ステップの導入"><a href="#棄却ステップの導入" class="headerlink" title="棄却ステップの導入"></a>棄却ステップの導入</h1><p>Metropolis Adjusted Langevin Algorithm (MALA) というアルゴリズムがあります。提案分布を (1) で定義した上で、<a href="https://ja.wikipedia.org/wiki/メトロポリス・ヘイスティングス法" target="_blank" rel="noopener">Metropolis–Hastings</a> と同じような棄却ステップを導入します。詳細は<a href="https://en.wikipedia.org/wiki/Metropolis-adjusted_Langevin_algorithm" target="_blank" rel="noopener">Wikipedia</a>や元論文 [RT96]、本 [RC10] などに載っています。</p>
+<p>こちらのアルゴリズムを上の $\pi_4 (x)$ に対して導入してみると、パスが途中で発散することはなく、さらに目的の分布に近いヒストグラムがちゃんと得られているように見えます。ただしステップ幅を大きく取りすぎると採択率が下がり、計算が全く終わらなくなります。</p>
+<img src="/blog/2016/08/25/201608-lmc/mala_beta4.png">
+<h1 id="PDF版"><a href="#PDF版" class="headerlink" title="PDF版"></a>PDF版</h1><p><a href="201608_mala.pdf">もうちょっと詳しく書いたPDF</a>を置いときます。</p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>[WT11] M. Welling and Y. W. Teh. Bayesian Learning via Stochastic Gradient Langevin Dynamics. In ICML, 2011.<br>[PT13] S. Patterson and Y. W. Teh. Stochastic Gradient Riemannian Langevin Dynamics on the Probability Simplex. In NIPS, 2013.<br>[RT96] G. O. Robert and R. L. Tweedie. Exponential convergence of Langevin distributions and their discrete<br>approximations. Bernoulli, 2(4):341–363, 1996.<br>[RC10] C. P. Robert and G. Casella. Monte Carlo Statistical Methods. Springer, 2010.</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-8/">2016/8</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/機械学習/">機械学習</a>, <a href="/blog/tags/統計学/">統計学</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

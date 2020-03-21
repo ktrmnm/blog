@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Generic Chaining (2) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="連鎖 (Chaining)前回の続き。
+このノートの落とし所としては次のようなものを想定している：
+
+確率過程の最大値をバウンドするためのchainingという技術がある
+chainingで得られるバウンドが非最適な場合がある
+generic chainingという技術を使うとそのギャップが埋まる
+
+でも今回は、chainingについて書いたら力つきて終わりそうだ。
+距離エントロピー$(T, d)$ を擬距離空間とする。$d$ で $T$ の大きさをはかり、それが $T$ 上の確率過程の最大値に与える影響が知りたいのだった。
+大きさのはかり方としてここで想定しているのは、
+
+半径 $\epsilon$ の球が最低いくつあれば $T$ を覆うことができるか ($\epsilon$-netの最小数)
+半径 $\epsilon$ の球を最大いくつ $T$ の中に押し込めるか ($\epsilon$-packingの最大数)
+
+といったもので、前者を被覆数 (covering number)、後者をパッキング数 (packing number)という。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Generic Chaining (2)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-25T11:07:49.000Z"><a href="/blog/2016/03/25/20160325-generic-chaining-2/">2016-03-25</a></time>
+      
+      
+  
+    <h1 class="title">Generic Chaining (2)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="連鎖-Chaining"><a href="#連鎖-Chaining" class="headerlink" title="連鎖 (Chaining)"></a>連鎖 (Chaining)</h1><p><a href="http://ktrmnm.github.io/blog/2016/03/23/20160322-generic-chaining-1/">前回</a>の続き。</p>
+<p>このノートの落とし所としては次のようなものを想定している：</p>
+<ul>
+<li>確率過程の最大値をバウンドするためのchainingという技術がある</li>
+<li>chainingで得られるバウンドが非最適な場合がある</li>
+<li>generic chainingという技術を使うとそのギャップが埋まる</li>
+</ul>
+<p>でも今回は、chainingについて書いたら力つきて終わりそうだ。</p>
+<h1 id="距離エントロピー"><a href="#距離エントロピー" class="headerlink" title="距離エントロピー"></a>距離エントロピー</h1><p>$(T, d)$ を擬距離空間とする。$d$ で $T$ の大きさをはかり、それが $T$ 上の確率過程の最大値に与える影響が知りたいのだった。</p>
+<p>大きさのはかり方としてここで想定しているのは、</p>
+<ul>
+<li>半径 $\epsilon$ の球が最低いくつあれば $T$ を覆うことができるか ($\epsilon$-netの最小数)</li>
+<li>半径 $\epsilon$ の球を最大いくつ $T$ の中に押し込めるか ($\epsilon$-packingの最大数)</li>
+</ul>
+<p>といったもので、前者を<strong>被覆数</strong> (covering number)、後者を<strong>パッキング数</strong> (packing number)という。</p>
+<a id="more"></a>
+<p>ちゃんと定義を書く。</p>
+<p>$(T, d)$ の$\epsilon$-被覆数 $N(T,d,\epsilon)$ とは、$t_1, \ldots, t_n \in T$ が存在して、$T \subset \bigcup_{i=1}^n B(t_i, \epsilon)$となるような最小の $n$ のこととする。ただし、$B(t, \epsilon)$は$t$を中心とする$\epsilon$-球である。</p>
+<p>$(T, d)$ の$\epsilon$-パッキング数 $D(T,d,\epsilon)$ とは、$t_1, \ldots, t_n \in T$ が存在して、各$i \neq j$ について$d(t_i, t_j) &gt; \epsilon$ となるような最大の $n$ のこととする。</p>
+<p>実は、覆うのも詰めるのもオーダーの上では違いがなくて、<br>$$<br>N(T, d, \epsilon) \leq D(T, d, \epsilon) \leq N(T, d, \epsilon/2)<br>$$<br>が成り立つ。これからの議論では定数倍の違いは気にしないので、被覆数に関して成り立つことはパッキング数でも成り立つし、逆も言える。必要に応じて便利な方に取り替えることができる。<br>（注）上の不等式の理由：<br>最大の$\epsilon$-packingは$\epsilon$-netにもなっていなければならないので左の不等式が成り立つ。<br>右については、$\epsilon/2$-netをひとつ固定すると、それぞれの球のなかには互いに$\epsilon$より離れた点を$1$点以上含むことができない。よって別の$\epsilon$-packingがあるとすれば、最大でもそれぞれの球にひとつずつ収まることしかできない。</p>
+<p>なおこの界隈では、これらの対数をとった$\log N(T, d, \epsilon)$とか$\log D(T, d, \epsilon)$といった量をmetric entropyと呼ぶことがある。</p>
+<h1 id="Dudley積分"><a href="#Dudley積分" class="headerlink" title="Dudley積分"></a>Dudley積分</h1><p>$T$ 上の確率過程 $X_t$ が $d$ についてのsub-Gaussian processであるとは、増分$X_t - X_s$がパラメータ$d(s,t)$のsub-Gaussianであることをいう:<br>$$<br>\mathbb{E} e^{\lambda(X_t - X_s)} \leq e^{\lambda^2 d(s,t)^2 /2}.<br>$$</p>
+<p>結論からいうと、sub-Gaussian processの最大値について次のようなことが言える。(<a href="https://en.wikipedia.org/wiki/Dudley%27s_theorem" target="_blank" rel="noopener">Dudleyの定理</a>)</p>
+<p><strong>定理</strong><br><em>$(T,d)$は擬距離空間で、$X_t$は$d$についてのsub-Gaussian processであるとする。<br>次ような積分が存在したとする:</em><br>$$<br>\int_0^\infty \sqrt{\log N(T,d,\epsilon)} \dd \epsilon &lt; \infty.<br>\tag{1}<br>$$<br><em>このとき、</em><br>$$<br>\mathbb{E}\sup_{t \in T} |X_t| \leq \mathbb{E}|X_{t_0}| + 4\sqrt{2} \int_0^{\mathrm{diam}T/2} \sqrt{\log 2 N(T, d, \epsilon)} \dd \epsilon<br>\tag{2}<br>$$<br><em>が成り立つ。ただし$t_0 \in T$は任意の点である。また、</em><br>$$<br>\mathbb{E}\sup_{t \in T: d(s,t)\leq \delta} |X_t - X_s| \leq (16\sqrt{2} + 2) \int_0^{\delta} \sqrt{\log 2 N(T, d, \epsilon)} \dd \epsilon<br>\tag{3}<br>$$<br><em>が成り立つ。</em></p>
+<p>これらを示す技術がchainingと呼ばれているもので、そのため不等式自体もchaining boundとか呼ばれたりする。(2)と(3)の違いは、(3)の方はパスの一様連続性の度合い<br>$$<br>\sup_{t \in T: d(s,t)\leq \delta} |X_t - X_s|<br>$$<br>を$\delta$の関数として評価しているということだ。</p>
+<p>これは個人的体験なのだが、機械学習を勉強していたつもりが上のような積分に初めて遭遇したときは心底ぎょっとした。なんじゃこりゃ感がある。カバリングナンバーを$\epsilon$で積分するって一体何事？と悩まざるを得ない。</p>
+<p>なんじゃこりゃ感の正体だが、<strong>有限個のmax評価を次々に連鎖</strong> (chaining) したらこうなったのだ、と言える。</p>
+<p><a href="http://ktrmnm.github.io/blog/2016/03/23/20160322-generic-chaining-1/">前回</a>も述べたが、代表点として有限$\epsilon$-netをひとつ固定したとき、それらの上での $\max |X_t|$ の期待値は $\sqrt{\log 2N(T, d, \epsilon)}$ に比例する量で押さえられる。ここでのアイデアは、$\epsilon$をどんどん細かくして代表点を増やしていけば、最終的には$T$全体でのsupをカバーできるというものだ。そこで細かくする方法に少々工夫があって、その最中の評価を足しこんでいったものが(1)(2)(3)のような積分ということになる。</p>
+<p>連鎖っぽさを具体的に感じるために、(2)の方を大雑把に示そうと思う。</p>
+<h2 id="Chainingによる証明"><a href="#Chainingによる証明" class="headerlink" title="Chainingによる証明"></a>Chainingによる証明</h2><h3 id="1-前置き"><a href="#1-前置き" class="headerlink" title="1. 前置き"></a>1. 前置き</h3><p>$\mathrm{diam}T = 0$ または (1) の積分が $+\infty$ のときは無意味なので、$\mathrm{diam}T &lt; \infty$ とする。</p>
+<p>距離$d$および$X_t$を等倍にスケールして、$\mathrm{diam}T &lt; 1$としても問題が生じないのでそうする。</p>
+<p>また、とくに $T$ は全有界だが、$T$ 全体ではなく、稠密な加算集合 $T_0$ の上で (2) を示すことにする（下の可測性の補足も参照）。そのためには、任意の有限集合 $S \subset T$で (2) を示せばよい。そうすれば、$S_n \uparrow T_0$ の極限をとれば単調収束定理より $T_0$ でも成り立つ。</p>
+<h3 id="2-Chainの構成"><a href="#2-Chainの構成" class="headerlink" title="2. Chainの構成"></a>2. Chainの構成</h3><p>$S$ を固定する。$k_1$ を十分大きくとって、$S$の2点どうしの距離で最も近いところより長さ $2^{-k_1}$ が短くなるようにとれば、$B(t, 2^{-k_1})$ は $S$ の点を高々1つまでしか含まない。<br>代表点の集合 $T_k$ を次のようにつくる。</p>
+<ul>
+<li>$T_{k_1} = S$</li>
+<li>$1 \leq k \leq k_1$ に対して、$T_k$ を最小$2^{-k}$-netとする</li>
+<li>$T_0 = \{ t_0 \}$</li>
+</ul>
+<p>絵を描いてみた。</p>
+<img src="/blog/2016/03/25/20160325-generic-chaining-2/chaining_grid.png" title="Grid">
+<p>$\{ t_0 \}$ の1点集合からはじまって、半径を半分ずつに縮めたnetをとっていく。$k$番目のレイヤーには$N(T, d, 2^{-k})$個の点があって、最後の$k_1$番目のレイヤーだけはそれぞれのグリッドに$S$の点が1個以下収まっている。<br>絵心がないので「四角く」描いているけど、$T$ は有限次元でなくてもいいし、$B(t, \epsilon)$ たちはdisjointでもない。</p>
+<p>次に、各 $s \in S$ に対して、$T_k$ への射影 $\pi_k(s)$ をひとつ定める。<br>基本的には、ひとつ上の階層の代表点のうち最も近いものに寄せていく。つまり、ある $t_k \in T_k$に対して $s \in B(t_k, 2^{-k})$ であれば、$\pi_k(s) = t_k$ と定める。$T_k$ は $2^{-k}$-netになっているはずだから、寄せるべき$T_k$の点は1つ以上は存在するが、もし2つ以上該当する場合は適当に一方を選ぶ。<br>ただし、$\pi_k(s) = \pi_k(s^\prime)$ ならば、$\pi_{k-1}(s) = \pi_{k-1}(s^\prime)$ となるようにする。</p>
+<p>$\pi_k(s)$ の行き先をすべて図示してみると、下のようにツリー状になる。</p>
+<img src="/blog/2016/03/25/20160325-generic-chaining-2/chaining.png" title="Chaining">
+<p>$s \in S = T_{k_1}$から出発して上に登っていく。2つの $s \neq s^\prime$　について、$\pi_k(s) = \pi_k(s^\prime)$ になるというのはそこでチェインが「合流」するということだが、そこから先は終点の $t_0$ に至るまでずっと同じチェインの上に乗っている。</p>
+<p><del>今後も個人的に使いそうなので図を描いてみたが、大変だった……</del></p>
+<h3 id="3-最大値評価"><a href="#3-最大値評価" class="headerlink" title="3. 最大値評価"></a>3. 最大値評価</h3><p>上の図で、チェインの作り方より、<br>$$<br>d(\pi_k(s), \pi_{k-1}(s)) \leq 2^{-(k-1)}<br>$$<br>である。$X_t$はsub-Gaussianだったので、これは<br>$$<br>\left[<br>\mathbb{E}(X(\pi_k(s)) - X(\pi_{k-1}(s)))^2<br>\right]^{1/2} \leq d(\pi_k(s), \pi_{k-1}(s)) \leq 2^{-(k-1)}<br>\tag{4}<br>$$<br>を意味する ($X(t) = X_t$)。</p>
+<p>一方、ツリー状に配置したおかげで、第$k$層と$k-1$層を結ぶ青い線は高々 $|T_k| = N(T, d, 2^{-k})$ 種類しかない。したがって、最大不等式より</p>
+<p>$$<br>\mathbb{E}\max_{s \in S} |X(\pi_k(s)) - X(\pi_{k-1}(s))|　\leq 2^{-(k-1)} \sqrt{2 \log 2 N(T, d, 2^{-k})}<br>$$<br>となる。</p>
+<p>よって、<br>$$<br>\begin{align}<br>\mathbb{E}\max_{s \in S} |X_t - X_{t_0}|<br>&amp; \leq \sum_{k=1}^{k_1} \mathbb{E}\max_{s \in S} |X(\pi_k(s)) - X(\pi_{k-1}(s))| \\<br>&amp; \leq \sum_{k=1}^{\infty} 4 \times 2^{-k-1} \sqrt{2 \log 2 N(T, d, 2^{-k})} \\<br>&amp; \leq \sum_{k=1}^{\infty} 4 \int_{2^{-k-1}}^{2^{-k}} \sqrt{2 \log 2 N(T, d, \epsilon)} \dd \epsilon \\<br>&amp; = 4 \int_{0}^{\mathrm{diam}T /2} \sqrt{2 \log 2 N(T, d, \epsilon)} \dd \epsilon.<br>\end{align}<br>$$</p>
+<p>これで (2) が示された。</p>
+<p>えっ。</p>
+<p><strong>すげえ。</strong></p>
+<p>要するに、増分のsub-Gaussian性（より一般にはOrliczノルムでのLipschitz性 [3]）から、(4) 式のように解像度を細かくしていくと分散が上手くコントロールされる。で、解像度の上げ方をツリー状にまとめ上げることで、各層で考えるべき候補の数を減らしている、というところがポイントである。</p>
+<h3 id="空間が大きいと最大値が暴れる"><a href="#空間が大きいと最大値が暴れる" class="headerlink" title="空間が大きいと最大値が暴れる"></a>空間が大きいと最大値が暴れる</h3><p>上で描いた図では2次元なので、半径 $\epsilon$ を $1/2$ にしたときに $N(T, d, \epsilon)$ は $4$ 倍程度にしかならない。</p>
+<p>しかし、一般に $T$ が無限次元だと、カバリングナンバーはもっと急速に増える可能性がある。そして、あまりに爆発的に増えすぎるとエントロピーの積分が収束しないため、最大値がバウンドできないことになる。これが、添字空間が大きすぎると最大値が発散することのイメージである。</p>
+<h1 id="Chainingだと物足りないケース"><a href="#Chainingだと物足りないケース" class="headerlink" title="Chainingだと物足りないケース"></a>Chainingだと物足りないケース</h1><p>Chainingのおかげで、要素数無限大でも最大値がバウンドできるようになってハッピーだ。</p>
+<p>次に疑問になってくるのは、エントロピーで得られる (1) のようなバウンドが一体どれくらいタイトなのか、ということだ。<br>実は、実用上使いそうであるにもかかわらず、あまりタイトではない例が知られている。具体例を書こうと思ったが、スペース上の都合で次回にまわす。</p>
+<p>そこで<strong>generic chaining</strong>である。</p>
+<p>とくに、$X_t$ が ガウス過程の場合は<br>$$<br>\frac{1}{C}\gamma_2(T, d) \leq \mathbb{E}\sup_{t \in T} X_t \leq C \gamma_2(T, d)<br>$$<br>のように<strong>下界もgeneric chainingで書ける</strong>ということがわかっていて (majorizing measure theorem)、正真正銘タイトなバウンドである。</p>
+<h2 id="補足：GC集合"><a href="#補足：GC集合" class="headerlink" title="補足：GC集合"></a>補足：GC集合</h2><p>Dudley積分の偉いところは、supの期待値の有界性だけでなくて、標本のごと連続度も表現してくれていることだ。<br>どういうことかというと、確率1で<br>$$<br>\sup_{s,t \in T} \frac{|X_t - X_s|}{\int_0^{d(s,t)} \sqrt{2 \log 2 N(T, d, \epsilon)} \dd \epsilon} &lt; \infty<br>$$<br>が成り立つ（[1] Theorem 2.3.8, [2] Theorem 2.3.6)。ただし、こっちを示す方がだいぶしんどい。</p>
+<p>ガウス過程に関して、$\sup_t X_t$ が有界になるような $T$ をGB集合、さらに$d$-一様連続になるような $T$ をGC集合という[2]。つまりDudley積分はGC集合であるための十分条件を与えてくれる。</p>
+<h2 id="補足2：Donsker性の判定"><a href="#補足2：Donsker性の判定" class="headerlink" title="補足2：Donsker性の判定"></a>補足2：Donsker性の判定</h2><p>さらにさらに、経験過程 $\sqrt{n}(P_n - P)$ が標本連続なガウス過程に法則収束してくれるか否か (一様中心極限定理！) というのは経験過程論における大問題である[2]。もし収束するなら、その添字集合は<strong>Donskerクラス</strong>であるという。<br>これを判定するにはどうすればいいかというと、結局のところ添字集合の大きさが問題になる。そもそも収束先のガウス過程にとってGC集合になっていないといけないのだから、Dudley積分のような、「標本連続性をコントロールする何か」を見てDonskerクラスかどうか判定できるんじゃないかという気がする。それはだいたい正しいのだが、経験過程の色々なことを一言で説明するのは「無理！」という感じなので[1]や[2]を参照。</p>
+<h2 id="めんどくさい補足：可測性"><a href="#めんどくさい補足：可測性" class="headerlink" title="めんどくさい補足：可測性"></a>めんどくさい補足：可測性</h2><p>可測性の話を完全に無視した。これからも無視する。</p>
+<p>どういうことかというと、可測関数の非可算個のsupは可測とは限らないのだから、本当は$\sup_t X_t$は確率変数とは限らないのだ。しかし、(1)の積分が存在するケースでは$T$はそもそも全有界で、$X_t$にはa.s.で一様連続なパスが出てくるバージョンが存在するので、supも可算集合の上で考えればよいから実質的に問題にならない[1]。あるいは、[3]や[4]ではsupの解釈そのものを、はじめから $\sup\{ \mathbb{E}\sup_{t \in F} |X_t|: F は有限集合\}$ と考えているようだ。</p>
+<p>これに限らず、興味ある対象が非可算supなせいで経験過程関係の本 (とくに[2]！) には可測性の話がうじゃうじゃ出てくる。私の近所では「初見殺しだ」ということで話題だ。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Giné and Nickl. Mathematical Foundations of Infinite-Dimensional Statistical Models, Cambridge University Press, 2015.<br>[2] Dudley. Uniform Central Limit Theorems (2nd edition), Cambrige University Press, 2014.<br>[3] Ledoux and Talagrand. Probability in Banach Spaces, Springer, 1991.<br>[4] Talagrand. Upper and Lower Bounds for Stochastic Processes, Springer, 2014.</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-3/">2016/3</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/学習理論/">学習理論</a>, <a href="/blog/tags/経験過程論/">経験過程論</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

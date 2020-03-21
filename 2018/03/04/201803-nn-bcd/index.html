@@ -1,0 +1,299 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Backpropしないニューラルネット入門 (2/2) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="1. 概要下記のarXiv論文を紹介します。
+Jinshan Zeng, Tim Tsz-Kit Lau, Shaobo Lin, Yuan Yao (2018).Block Coordinate Descent for Deep Learning: Unified Convergence Guar">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Backpropしないニューラルネット入門 (2/2)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T23:00:00.000Z"><a href="/blog/2018/03/04/201803-nn-bcd/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title">Backpropしないニューラルネット入門 (2/2)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="1-概要"><a href="#1-概要" class="headerlink" title="1. 概要"></a>1. 概要</h1><p>下記のarXiv論文を紹介します。</p>
+<p>Jinshan Zeng, Tim Tsz-Kit Lau, Shaobo Lin, Yuan Yao (2018).<br>Block Coordinate Descent for Deep Learning: Unified Convergence Guarantees.<a href="https://arxiv.org/abs/1803.00225" target="_blank" rel="noopener">arXiv:1803.00225</a></p>
+<p>現時点では投稿されて間もない論文ですが、個人的には機械学習の論文を読んでいて久々に楽しい気持ちになれました。</p>
+<p>論文の提案手法はgradient-free methodと呼ばれる手法の一種なので、本記事はそのあたりのレビューも少し兼ねます。</p>
+<h1 id="2-勾配法の収束条件"><a href="#2-勾配法の収束条件" class="headerlink" title="2. 勾配法の収束条件"></a>2. 勾配法の収束条件</h1><p>ニューラルネットの構造をひとつ固定し、その構造を使って表せる関数の全体を $\mathcal{F}$ と書きます。ニューラルネットの学習とは、与えられた損失を最小化する関数を見つけることです。例えば、二乗損失なら<br>$$<br>\hat{f} \in \arg \min_{f \in \mathcal{F}} \sum_{i=1}^n (y_i - f(x_i))^2<br>$$<br>のようになります。<a href="http://ktrmnm.github.io/blog/2018/03/04/201803-nn-generalization/">Part 1</a>で述べたとおり、この最適化問題が解けるという前提のもとで、いくつかの新しい汎化誤差バウンドが得られています。しかし、これは一般には非凸最適化となり、大域最適解へが得られることは保証できません。</p>
+<p>現在、ニューラルネットの学習はSGD, AdaGrad, Adam, RMSPropといった勾配法ベースの最適化手法が使われていることが多く、主要な深層学習ライブラリも、勾配計算 (Backprop) の機能を提供することを主な目的としていると思います。これらの手法は、目的関数が凸であれば大域解への収束が保証されていることが多いです。</p>
+<p>が、実際に興味のある目的関数は凸ではなく、もっというと、ReLUを使った場合は微分可能ですらありません。ちなみに、目的関数が凸でも、微分可能性のようなもの (正確にはsmoothness) は収束レートに関わることがあります。</p>
+<p>また近年、ハードウェアへの移植などを目的として、<a href="https://arxiv.org/abs/1602.02830" target="_blank" rel="noopener">Binarized Neural Networks</a>のようにパラメータが離散的な値をとる深層学習モデルがあります。このようなモデルではそもそも勾配が存在しないため、勾配ベースの最適化アルゴリズムを直接適用することはできません。</p>
+<h1 id="3-Block-Coordinate-Descent-BCD-ブロック座標降下法"><a href="#3-Block-Coordinate-Descent-BCD-ブロック座標降下法" class="headerlink" title="3. Block Coordinate Descent (BCD, ブロック座標降下法)"></a>3. Block Coordinate Descent (BCD, ブロック座標降下法)</h1><p>だけど、</p>
+<ul>
+<li>目的関数が非凸でも</li>
+<li>微分不可能でも</li>
+<li>勾配を使わなくても</li>
+<li>初期値をどこに設定しても</li>
+</ul>
+<p>局所解に収束することを理論的に示せるよ。<strong>ブロック座標降下法</strong> ならね!!</p>
+<h2 id="3-1-アルゴリズムの概要"><a href="#3-1-アルゴリズムの概要" class="headerlink" title="3.1. アルゴリズムの概要"></a>3.1. アルゴリズムの概要</h2><h3 id="記号"><a href="#記号" class="headerlink" title="記号"></a>記号</h3><p>$T$ 層のニューラルネットを学習する問題を抽象的に定義します。まず、</p>
+<ul>
+<li>$d_0, d_1, \ldots, d_T$ : ニューラルネットの各層の幅。特に、$d_0$ は入力 $x$ の次元、$d_T$ はラベル $y$ の次元と一致</li>
+<li>$W_i \in \mathbb{R}^{d_{i} \times d_{i - 1}}$ : 第 $i$ 層のパラメータ</li>
+<li>$\sigma_i$ : 活性化関数</li>
+</ul>
+<p>として、ニューラルネットで表現している関数は<br>$$<br>f(x) = W_T \sigma_{T - 1} (W_{T-1} \sigma_{T-2}(\cdots \sigma_{1}(W_1 x) \cdots ))<br>$$<br>であるとします。また、</p>
+<ul>
+<li>$X := [x_1, \ldots, x_n] \in \mathbb{R}^{d_0 \times n}$ : 入力データ</li>
+<li>$Y := [y_1, \ldots, y_n] \in \mathbb{R}^{d_T \times n}$ : ラベルデータ</li>
+<li>$\mathcal{L}(f, y)$ : 損失関数 (非負・連続だが凸とは限らない)</li>
+</ul>
+<p>として、経験損失を<br>$$<br>\ell(f(X); Y) := \frac{1}{n} \sum_{i = 1}^n \mathcal{L}(f(x_i), y_i)<br>$$<br>と定義します。$r_i, s_i$ を事前分布や正則化項を表す関数とします。このとき、興味のある最適化問題は、以下のような等式制約のある問題として書けます。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/splitting.png" title="NNの最適化の3-splitting formulation">
+<p>なお、本来最適化すべきパラメータは $W_i$ ($i = 1, \ldots, T$) ですが、スラック変数を導入して $(W_i, V_i, U_i)$ の三つ組を最適化するという意味で、論文中では上の最適化問題を3-splitting formulationと呼んでいます。</p>
+<h3 id="BCDアルゴリズム"><a href="#BCDアルゴリズム" class="headerlink" title="BCDアルゴリズム"></a>BCDアルゴリズム</h3><p>BCDアルゴリズムのアイデアは簡単です。まず、上記の等式制約をFrobeniusノルムによるペナルティとして表現します。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/barrier.png" title="BCDの目的関数">
+<p><a href="https://en.wikipedia.org/wiki/Augmented_Lagrangian_method" target="_blank" rel="noopener">拡張ラグランジュ関数</a> から線形のラグランジュ乗数を取り除いた格好ですが、なんと呼ぶのが適切かはちょっと知りません。二次バリア関数とか？</p>
+<p>あとは、$V_i, U_i, W_i$ のそれぞれに関する最小化をサイクリックに行うだけです。論文からアルゴリズムを引用します。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/ZLLY18_alg1.png" title="Algorithm 1 in Zeng, et al. (2018) arXiv:1803.00225">
+<p>それぞれの部分問題はちょうど近接作用素を求めるような形になっており、例えば「損失 $\ell$ が2次関数、$\sigma$ がReLU、$s_i$, $r_i$ が0」といった典型的な場合ではclosed-formの解が得られます (e.g. Lemma 1)．</p>
+<p>ニューラルネットがconvolution層を含む場合も等式制約を追加すればよいので、アルゴリズムを拡張することは容易であることが述べられています。また、ResNetに拡張した例がAlgorithm 2として提案されています。</p>
+<p>なお、後述するように、このアルゴリズムには理論収束保証もあります。しかし、オリジナルの問題についてではなく、この $\bar{\mathcal{L}}$ が局所解に収束することを保証するものですので、その点に関しては注意が必要です。</p>
+<h2 id="3-2-数値例"><a href="#3-2-数値例" class="headerlink" title="3.2. 数値例"></a>3.2. 数値例</h2><p>論文の数値例を紹介します。追実験などはしていません。</p>
+<p>$T = 4$ 層のDNNでMNISTとCIFAR-10の学習を、BCDおよびSGDで行った結果の引用です。NNの構造やSGDの学習率の詳細は論文を参照してください。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/ZLLY18_fig1.png" title="Figure 1 in Zeng, et al. (2018) arXiv:1803.00225">
+<p>実時間ではなくエポック数の比較ですが、SGDが学習に約100エポック必要とするのに対し、BCDは5エポック以下（！）で学習がほとんど終了していることがわかります。また、最終的なtest accuracyもSGDと比較して遜色ないものとなっています (Table 1).</p>
+<p>定式化から明らかなようにBCDの1回の更新にかかるコストは大きく、メモリに乗らない量のデータをどう扱うかなど疑問点はありますが、promissingな結果であることは間違いないと思われます。</p>
+<h2 id="3-3-その他のgradient-free-method-先行研究"><a href="#3-3-その他のgradient-free-method-先行研究" class="headerlink" title="3.3. その他のgradient-free method / 先行研究"></a>3.3. その他のgradient-free method / 先行研究</h2><p>先行研究に少し触れておきます。（このあたりはまだ勉強中です）。</p>
+<p>ニューラルネットの学習をgradient-freeに行うアルゴリズムとしては、 ADMMベースの手法[1],[2],BCDベースの手法[3]が提案されています。Gradient-freeな方法の動機として、紹介論文や [1] では勾配法との比較が述べられています。計算面での主な違いは、勾配法は小さなミニバッチを使った低コストな更新を多数回行うのに対し、勾配フリー法は多くのデータを使った高コストな更新を小数回行う手法になっており、前者はGPU、後者はCPU上での実行が適しています。勾配法の収束については、勾配消失やプラトーなど既知の問題がありますが、勾配フリー法では紹介論文のような収束保証が得られています。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/table1.png" title="勾配法と勾配フリー法の比較">
+<p>[1] Gavin Taylor, Ryan Burmeister, Zheng Xu, Bharat Singh, Ankit Patel, Tom Goldstein (2016).<br>Training Neural Networks Without Gradients: A Scalable ADMM Approach. In ICML2016. <a href="https://arxiv.org/abs/1605.02026" target="_blank" rel="noopener">arXiv:1605.02026</a></p>
+<p>[2] Ziming Zhang, Yuting Chen, Venkatesh Saligrama (2016).<br>Efficient Training of Very Deep Neural Networks for Supervised Hashing. In CVPR2016. <a href="https://arxiv.org/abs/1511.04524" target="_blank" rel="noopener">arXiv:1511.04524</a></p>
+<p>[3] Ziming Zhang, Matthew Brand (2017).<br>Convergent Block Coordinate Descent for Training Tikhonov Regularized Deep Neural Networks. In NIPS2017. <a href="https://arxiv.org/abs/1711.07354" target="_blank" rel="noopener">arXiv:1711.07354</a></p>
+<h1 id="4-収束保証"><a href="#4-収束保証" class="headerlink" title="4. 収束保証"></a>4. 収束保証</h1><p>BCDアルゴリズムでは、$\bar{\mathcal{L}}$ が局所解に収束することが、比較的広い条件のもとで示されています。</p>
+<h2 id="4-1-Kurdyka-Lojasiewicz-KL-条件"><a href="#4-1-Kurdyka-Lojasiewicz-KL-条件" class="headerlink" title="4.1. Kurdyka-Łojasiewicz (KL)条件"></a>4.1. Kurdyka-Łojasiewicz (KL)条件</h2><p>最近の非凸最適化の論文では、目的関数に課す正則条件としてKurdyka-Łojasiewicz (KL) propertyというものがトレンドになっているようです。まず定義を書きます</p>
+<h3 id="記号-1"><a href="#記号-1" class="headerlink" title="記号"></a>記号</h3><p>(凸とは限らない) 関数 $f: \mathbb{R}^d \to \mathbb{R}\cup \{ + \infty \}$ の $x \in \mathbb{R}^d$ における劣勾配 $g \in \partial f(x)$ とは $(x_k, g_k) \to (x, g)$ となる点列が存在して、$f(x_k) \to f(x)$ かつ<br>$$<br>f(x^\prime) \geq f(x_k) + \langle g_k, x^\prime - x_k \rangle + o(\lVert x^\prime - x_k \rVert_2)<br>$$<br>が成り立つことをいう (正確な定義は <a href="https://arxiv.org/abs/1410.1386" target="_blank" rel="noopener">この文献</a> など)。劣勾配の集合 $\partial f(x)$ を $x$ における $f$ の劣微分という．</p>
+<p>$\partial f(x)$ が空でない $x \in \mathbb{R}^d$ の集合を $\mathrm{dom}(\partial f)$ と書く。また、<br>$$<br>\mathrm{dist}(0, \partial f(x)) := \min\{ \lVert g \rVert_2: g \in \partial f(x) \}<br>$$<br>とする。</p>
+<h3 id="定義：KL条件"><a href="#定義：KL条件" class="headerlink" title="定義：KL条件"></a>定義：KL条件</h3><p>関数 $f: \mathbb{R}^d \to \mathbb{R} \cup  \{ + \infty \}$ が点 $x^* \in \mathrm{dom}(\partial f)$ においてKL propertyをもつとは、3つ組</p>
+<ul>
+<li>$\eta \in (0, +\infty]$</li>
+<li>$x^*$ の近傍 $U$</li>
+<li>凹関数 $\varphi: [0, \eta) \to \mathbb{R}_+$</li>
+</ul>
+<p>が存在して以下の条件を満たすことをいう：</p>
+<ol>
+<li>$\varphi(0) = 0$, $\varphi$ は $(0, \eta)$ で $C^1$ 級</li>
+<li>任意の $s \in (0, \eta)$ に対して $\varphi^\prime(s) &gt; 0$</li>
+<li>任意の $x \in U \cap \{ x: f(x^*) &lt; f(x) &lt; f(x^*) + \eta \}$ に対して、次の <strong>Kurdyka-Łojasiewicz不等式</strong> が成り立つ<br>$$<br>\varphi^\prime(f(x) - f(x^*)) \mathrm{dist}(0, \partial f(x)) \geq 1.<br>$$</li>
+</ol>
+<p>KL不等式が何を言っているかというのが問題ですね。KL条件の意味については<a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">このスライド</a> がわかりやすいです。(確か、以前tmaeharaさんに教えていただいたものです)</p>
+<p>まず、$0 \in \partial f(x)$ というのは $x$ が $f$ の停留点であるということなので、逆に $\mathrm{dist}(0, \partial f(x))$ が大きいならば点 $x$ において $f$ が大きく傾いているということを表します。もし $f$ の等高線でスライスした領域 $\{ x: a &lt; f(x) &lt; b \}$ において一様に $\mathrm{dist}(0, \partial f(x)) \geq c &gt; 0$ が成り立つのであれば、関数の「谷」のような部分に向かって急に落ち込んでいるものと考えられます。</p>
+<img src="/blog/2018/03/04/201803-nn-bcd/Bolte_2015_sharp_function.png" title="Figure from Bolte (2015)">
+<p>(図は <a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">Bolte(2015)</a> から引用)</p>
+<p>この性質が成り立つとき、$f$ はこのスライスにおいてsharpである、ということにします。もし $f$ がsharpであれば、近接点法のようなアルゴリズムは有限ステップで「谷底」のような部分に到達できます (ラフな証明は <a href="http://www.gipsa-lab.fr/summerschool/slra2015/BolteGrenoble.pdf" target="_blank" rel="noopener">Bolte(2015)</a> p.17)。</p>
+<p>KL条件は、本質的には<br>$$<br>\mathrm{dist}(0, \partial(\varphi\circ (f(x) - f(x^*)))) \geq 1<br>$$<br>と等価です。これは、凹関数 $\varphi$ によって、等高線のスライスを高さ $f(x^*)$ の「谷底」に近づける速さをコントロールしたときにsharpと見做せる、ということを述べています。よって、なんとなくですが、$f$ 自身が凸でなくても、谷底に到達する何らかの手段は手に入るような感じがします。</p>
+<h3 id="KL条件を満たす関数"><a href="#KL条件を満たす関数" class="headerlink" title="KL条件を満たす関数"></a>KL条件を満たす関数</h3><p>重要な点は、実はかなり多くの関数がKL条件を満たすことがわかります。というか、「KL条件を満たす関数がたくさんある」ということそのものがこの理論の根幹をなす結果になっているようです。</p>
+<ul>
+<li>解析関数はKL条件を満たす。</li>
+<li>グラフが半代数的集合になる関数を半代数的関数 (semialgebraic function) という。すべての半代数的関数はKL条件を満たす。</li>
+<li>半代数的関数は有限個の和や積、合成などの操作で閉じる。</li>
+</ul>
+<p>例えば、2次関数やReLUなどは半代数的関数なのでKL条件を満たします。よって、それらの和・積・合成によってできている訓練損失もKL条件を満たすことが示せます (Proposition 1)。</p>
+<h3 id="KL条件から何が言えるか"><a href="#KL条件から何が言えるか" class="headerlink" title="KL条件から何が言えるか"></a>KL条件から何が言えるか</h3><p>ずばり、近接点法や座標降下法のようなアルゴリズムの収束保証と収束レートの導出に使えます[4] [5]。具体的には、近接点法では $\varphi(s) = c s^(1- \theta)$ ($\theta \in [0, 1)$) のような形をしているとき、$\theta = 0$ なら有限ステップで停留点に収束、$0 &lt; \theta \leq 1/2$ ならば誤差が $O(\exp(-k))$ で収束、$1/2 &lt; \theta &lt; 1$ ならば $O(k^{-(1 - \theta)/(2\theta - 1)})$ で収束、という結果が得られており [4]、紹介論文でもこの結果に帰着することで収束レートを出しています。</p>
+<p>[4] Hedy Attouch, Jérôme Bolte (2009).<br>On the convergence of the proximal algorithm for nonsmooth functions involving analytic features. Mathematical Programming, 116, 5–16. <a href="https://pdfs.semanticscholar.org/5913/62ef83ce9050159ab8c9b70f8cf8e7c8319d.pdf" target="_blank" rel="noopener">プレプリント</a></p>
+<p>[5] Hedy Attouch, Jérôme Bolte, Benar Fux Svaiter (2013).<br>Convergence of descent methods for semi-algebraic and tame problems: proximal algorithms, forward–backward splitting, and regularized Gauss–Seidel methods. Mathematical Programming, 137, 91–129. <a href="https://link.springer.com/article/10.1007/s10107-011-0484-9" target="_blank" rel="noopener">URL</a></p>
+<h2 id="4-2-BCDの収束"><a href="#4-2-BCDの収束" class="headerlink" title="4.2. BCDの収束"></a>4.2. BCDの収束</h2><p>DNNに対するBCDの収束は次のことが示せます。($\bar{\mathcal{L}}$ の収束であることに注意)</p>
+<p><strong>仮定</strong></p>
+<ul>
+<li>$i = 1, \ldots, T-1$ について、活性化関数 $\sigma_i$ は $L$-Lipschitzである</li>
+<li>関数 $\bar{\mathcal{L}}$ はある点でKL条件を満たす。特に、(a) $s_i, r_i$ が半代数的関数であり、(b) 損失関数が2乗損失、ロジスティック損失、ヒンジ損失のいずれかであり、(c) 活性化関数がReLU、シグモイド、線形リンクのいずれかであれば、どの組み合わせでもこの条件は満たされる。</li>
+</ul>
+<p><strong>Theorem 2 (要点のみ)</strong><br>上の仮定が成り立つとする。BCDアルゴリズムの第 $k$ ステップでの出力を $P^k$ とする。</p>
+<ol>
+<li>BCDアルゴリズムにおいて、$\mathrm{dist}^2(0, \partial \bar{\mathcal{L}}(P^k))$ のrunning best rate ($k$ステップまでの最良値) は $o(1/k)$ である。</li>
+<li>関数 $\bar{\mathcal{L}}$ がある点において、$\varphi(s) = c s^{1 - \theta}$ に対してKL条件を満たすならば、停留点への収束レートが得られる。</li>
+</ol>
+<h1 id="5-結論"><a href="#5-結論" class="headerlink" title="5. 結論"></a>5. 結論</h1><p>現在、「GPUに廃課金して勾配法で殴る」という手法が主流になっていると思われますが、これを機に今後はgradient-freeな手法にも期待できるかもしれません。</p>
+<p><blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">深層学習の一般論を講義するのに、 いやがるニューラルネットにわざわざbackpropする必要があるでしょうか？ニューラルネットにも命があります。 命あるものを粗末に扱うことは許されません。</p>&mdash; 某ことり (@ktrmnm) <a href="https://twitter.com/ktrmnm/status/969581746319585280?ref_src=twsrc%5Etfw" target="_blank" rel="noopener">2018年3月2日</a></blockquote></p>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p><a href="http://www.ms.u-tokyo.ac.jp/~kawazumi/spcm.html" target="_blank" rel="noopener">(参考)</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2018-3/">2018/3</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/機械学習/">機械学習</a>, <a href="/blog/tags/深層学習/">深層学習</a>, <a href="/blog/tags/最適化/">最適化</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

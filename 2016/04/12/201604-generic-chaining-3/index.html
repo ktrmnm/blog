@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Generic Chaining (3) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="前提Generic chainingのタイトさを個人的に理解するためのノートの3つめ。
+
+その1
+その2
+
+実は、とてもわかりやすい資料[1]を発見したため、あまり自分でリライトする意味がなくなりつつある。でも一応自分の言葉でまとめておく。
+$X_t$は平均0の$d$-sub-Gaussian processとする。つまり、増分がsub-Gaussianであるような確率過程とする：$$\Pr(| X_s - X_t| \geq u) \leq 2 \exp \left( - \frac{u^2}{2d(s,t)^2}\right).\tag{1}$$下つきの添字がスペース上の都合で書きにくいときは$X_t = X(t)$とも書く。
+特に、$X_t$がガウス過程のときは、距離$d$として、$X_t$から定まる内在的な距離$$d(s, t) = \sqrt{\mathbb{E}(X_t - X_t)^2}$$を用いればよい。
+平均0なので、$t_0 \in T$を固定すれば$$\mathbb{E}\sup_t X(t) = \mathbb{E}\sup_t (X(t) - X(t_0))$$が成り立つ。左辺に興味がある場合も、右辺を考えた方が今は都合がよい。$Y = \sup_t (X(t) - X(t_0))$は非負なので、$$\mathbb{E} Y = \int_0^\infty \Pr(Y \geq u) \dd u$$が成り立つ。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Generic Chaining (3)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-04-12T11:22:56.000Z"><a href="/blog/2016/04/12/201604-generic-chaining-3/">2016-04-12</a></time>
+      
+      
+  
+    <h1 class="title">Generic Chaining (3)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>Generic chainingのタイトさを個人的に理解するためのノートの3つめ。</p>
+<ul>
+<li><a href="http://ktrmnm.github.io/blog/2016/03/23/20160322-generic-chaining-1/">その1</a></li>
+<li><a href="http://ktrmnm.github.io/blog/2016/03/25/20160325-generic-chaining-2/">その2</a></li>
+</ul>
+<p>実は、とてもわかりやすい資料[1]を発見したため、あまり自分でリライトする意味がなくなりつつある。でも一応自分の言葉でまとめておく。</p>
+<p>$X_t$は平均0の$d$-sub-Gaussian processとする。つまり、増分がsub-Gaussianであるような確率過程とする：<br>$$<br>\Pr(| X_s - X_t| \geq u) \leq 2 \exp \left( - \frac{u^2}{2d(s,t)^2}\right).<br>\tag{1}<br>$$<br>下つきの添字がスペース上の都合で書きにくいときは$X_t = X(t)$とも書く。</p>
+<p>特に、$X_t$がガウス過程のときは、距離$d$として、$X_t$から定まる内在的な距離<br>$$<br>d(s, t) = \sqrt{\mathbb{E}(X_t - X_t)^2}<br>$$<br>を用いればよい。</p>
+<p>平均0なので、$t_0 \in T$を固定すれば<br>$$<br>\mathbb{E}\sup_t X(t) = \mathbb{E}\sup_t (X(t) - X(t_0))<br>$$<br>が成り立つ。左辺に興味がある場合も、右辺を考えた方が今は都合がよい。$Y = \sup_t (X(t) - X(t_0))$は非負なので、<br>$$<br>\mathbb{E} Y = \int_0^\infty \Pr(Y \geq u) \dd u<br>$$<br>が成り立つ。</p>
+<a id="more"></a>
+<h1 id="Generic-chainingによる上界"><a href="#Generic-chainingによる上界" class="headerlink" title="Generic chainingによる上界"></a>Generic chainingによる上界</h1><p>連鎖 (chaining) というのは次のような考え方であった。$T$の代表点の集合$T_n$の増加列をつくり、$T_n$の要素数が増大するペースと、近時の第$n$階層と$(n+1)$階層の間の分散が減るペースをコントロールする。分散と要素数がコントロールされたsub-Gaussian変数の最大値（の期待値）をバウンドする不等式を用いて、$|X(\pi_n(t)) - X(\pi_{n+1}(t))|$の最大値をまとめ上げることによって、目的の$|X(t)-X(t_0)|$の最大値をバウンドする（<a href="http://ktrmnm.github.io/blog/2016/03/25/20160325-generic-chaining-2/">前回</a>参照）。</p>
+<p>上の操作をもっとシステマティックに整理したのがgeneric chainingによる上界と言える。<br>改善の余地があるとしたら、直感的には次の二点な気がする：</p>
+<ul>
+<li>もともとのchainingでは、$T_n$は$T$の$2^{-n}$-netになるようにとった。つまり、$T_n$の点はいわば等間隔に選んでいたが、冷静に考えると必ずしもそうである必要はない。$T$という空間の形状を考慮すると、最大に近い値をとりやすい領域とそうでない領域が発生している可能性がある。そういった$T$の偏りを考慮すると、実際に最大値をとりそうな領域の周辺で解像度を上げるべきかもしれない。</li>
+<li>もとは階層ごとに最大不等式を使ってバウンドしていた。こうすると、階層ごとにチェーンをぶつ切りにして最大値を達成するような代表点の組をその都度選び直していることになるが、どうせならチェーンはつながったままにして、最大を考える作業は最後にまとめてやれば良い気がする。$\sum_n \sup_t$よりも$\sup_\t \sum_n$の方がおそらくましである（下の(4)式も参照）。</li>
+</ul>
+<p>というわけで、generic chainingでは、$T_n$の点の間隔を可変にして、$\sup_t$という評価を行う作業は最後まで遅延する。</p>
+<p>以下で考える$T_n$は、$T_0 = \{ t_0 \}$であって、$T_0 \subset T_1 \subset \cdots \subset T$となるような列とする。<br>ただし、間隔を可変にしたとはいえ、要素数が一気に増えすぎるとunion boundが無意味になるという（若干技術的な）事情があるので、<br>$$<br>|T_n|\leq 2^{2^n}<br>$$<br>となるようにする。イメージとしては、$|T_{n + 1}| \approx |T_n|^2$というペースで要素数を増やす[1]。<br>$\gamma_2(T,d)$を次のように定義する：<br>$$<br>\gamma_2(T, d) := \inf \sup_{t \in T} \sum_{n=0}^\infty 2^{n/2} d(t, T_n)<br>$$<br>ここで、infは上のような$T_n$の全体にわたってとる。$d(t, T_n) = \min_{s \in T_n} d(t, s)$とする。</p>
+<p><strong>定理</strong><br>普遍的な定数$C &gt; 0$が存在して、<br>$$<br>\mathbb{E}\sup_t X_t \leq C \gamma_2(T, d)<br>\tag{2}<br>$$<br>が成り立つ。</p>
+<p>証明は省略するが、要は$T_n$を固定したときに<br>$$<br>\Pr( \sup_t (X(t) - X(t_0) &gt;  u \sum_{n=0}^\infty 2^{n/2} d(t, T_n)) \leq C \exp(-u^2)<br>$$<br>であることを言えばよいのであって、これはsub-Gaussian性(1)とunion boundから出てくる。</p>
+<p>とはいえ、結局、”最適な” $T_n$の選び方をある程度特定してやらないことには(2)のタイト感はよくわからない。<br>一方で、前述のように$T_n$を等間隔にしたものがchainingであったから、chaining boundに相当するものは(2)から復元できる。</p>
+<p><strong>エントロピー数</strong> $e_n(T)$を、<br>$$<br>e_n(T) := \inf_{T_n} \sup_t d(t, T_n)<br>\tag{3}<br>$$<br>と定義する。ただし、infは$|T_n| \leq 2^{2^n}$をみたすような有限集合全体にわたってとる。エントロピー数は、$\epsilon$-カバリングナンバーや$\epsilon$-パッキングナンバーの逆関数のようなもので、要素数を固定したときの$\epsilon$だと考えればよい。<br>(3)でinfを達成するような$T_n$を選ぶことによって、<br>$$<br>\gamma_2(T, d) \leq \sup_t \sum_{n=0}^\infty 2^{n/2} d(t, T_n) \leq \sum_{n=0}^\infty 2^{n/2} e_n(T)<br>\tag{4}<br>$$<br>がわかる。しかし、最右辺は、ある定数$C &gt; 0$が存在して<br>$$<br>\sum_{n=0}^\infty 2^{n/2} e_n(T) \leq C \int_0^\infty \sqrt{\log N(T, d, \epsilon)} \dd \epsilon<br>$$<br>であることがわかるから[2]、chaining boundが (up-to-constantで) 復元する。</p>
+<h1 id="Generic-chainingによる下界"><a href="#Generic-chainingによる下界" class="headerlink" title="Generic chainingによる下界"></a>Generic chainingによる下界</h1><p>$X_t$はガウス過程であるとする。この場合はとくに、generic chainingによる<strong>下からの評価</strong>も成立する。</p>
+<p><strong>定理 (Majorizing measure theorem)</strong><br>$X_t$はガウス過程とし、$d$は$X_t$からきまる$T$上の擬距離とする。普遍的な定数$c &gt; 0$が存在して、<br>$$<br>\mathbb{E}\sup_t X_t \geq c \gamma_2(T, d)<br>$$<br>が成り立つ。</p>
+<p>少々どうでもいいんですが、なぜmajorizing “measure”という名前なのかというと、$\gamma_2$と本質的に同じものを代表点$T_n$ではなくて$T$上の測度を使って定式化することができ、そちらが先に出てきたという歴史的経緯によるものらしい。”Majorizing measures without measures”という（一体何を言ってるんだという感じのタイトルの）論文が存在するあたり、若干その雰囲気がうかがえる。</p>
+<h1 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h1><p>このノートでは確率過程のsupについて次のことを書いた:</p>
+<ul>
+<li>有限個のsub-Gaussian変数の最大不等式 ($\sqrt{\log N}$)</li>
+<li>sub-Gaussian processのchaining bound ($\int \sqrt{\log N(T, d, \epsilon)} \dd \epsilon$)</li>
+<li>generic chaining bound (上界 &amp; ガウス過程の下界)</li>
+</ul>
+<p>他にもchaining boundがタイトでなくなる具体例とか、下界が成り立つ理由を書こうと思ったものの、力尽きたのでやめておく。[2]が専門書です。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] J. R. Lee. Notes on Gaussian processes and majorizing measures (<a href="https://homes.cs.washington.edu/~jrl/mm.pdf" target="_blank" rel="noopener">PDF</a>)<br>[2] M. Talagrand. Upper and Lower bounds for Stochastic Processes, Springer, 2014.<br>[3] M. Talagrand. Majorizing Measures without Measures, The Annals of Probability, 29(1):411–417, 2001.</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2016-4/">2016/4</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/学習理論/">学習理論</a>, <a href="/blog/tags/経験過程論/">経験過程論</a>, <a href="/blog/tags/確率論/">確率論</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

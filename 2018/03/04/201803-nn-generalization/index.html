@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Backpropしないニューラルネット入門 (1/2) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="はじめに最近、統数研で行われた関数推論のワークショップを聴講したり、面白いarXiv論文に出会ったりしまして、深層学習の理論への個人的な関心が高まってきました。そこで、いくつか関心があることをブログにまとめようと思います。
+タイトルはほぼ釣りですが、
+
+今回は「最適化マターをすべて無視した場合の汎化">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Backpropしないニューラルネット入門 (1/2)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-03T20:08:59.000Z"><a href="/blog/2018/03/04/201803-nn-generalization/">2018-03-04</a></time>
+      
+      
+  
+    <h1 class="title">Backpropしないニューラルネット入門 (1/2)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p>最近、統数研で行われた<a href="https://ismseminar.github.io/fimi2018/" target="_blank" rel="noopener">関数推論のワークショップ</a>を聴講したり、面白いarXiv論文に出会ったりしまして、深層学習の理論への個人的な関心が高まってきました。そこで、いくつか関心があることをブログにまとめようと思います。</p>
+<p>タイトルはほぼ釣りですが、</p>
+<ul>
+<li>今回は「最適化マターをすべて無視した場合の汎化理論」</li>
+<li>次回は「Backpropしない最適化手法」</li>
+</ul>
+<p>という予定なので、そこまで間違ってはいないつもりです。ちなみに、網羅的なレビューではありません。</p>
+<h1 id="汎化というミーム"><a href="#汎化というミーム" class="headerlink" title="汎化というミーム"></a>汎化というミーム</h1><p>機械学習の研究は「手法そのものの基礎研究」という側面がありますので、深層学習の研究の目標としては</p>
+<ol>
+<li>なぜ深層学習がうまくいっているように見えるのか</li>
+<li>どうすれば「理論保証つきで」もっとうまくいくのか</li>
+</ol>
+<p>ということはぜひ解明されるべきかと思います。（もちろん、一枚岩の分野ではなく、応用研究が重要です）。</p>
+<p>「なぜうまくいくのか」というのは、汎化 (generalization) の理論を掘りすすめるということです。</p>
+<p>今までの統計的機械学習は、汎化というパラダイムとともにずっと歩んできました。汎化というのは、「手元にあるデータがとある未知の法則から発生したものであるとき、同じ法則から発生するであろう未来のデータをうまく説明できる能力」です。もう少し現場で使われている表現だと、test accuracyが良くなる状態というのが汎化といえます。</p>
+<p>そして、よい学習とモデルの複雑さにはトレードオフの関係があります。</p>
+<ul>
+<li>理論的には、リスクや<a href="https://en.wikipedia.org/wiki/Vapnik%E2%80%93Chervonenkis_theory" target="_blank" rel="noopener">汎化誤差の上界</a>に「モデルの大きさ」に相当する項が含まれてしまうため、トレードオフを考慮して <strong>モデルはなるべく小さく選ぶ</strong>、というのが<a href="https://ja.wikipedia.org/wiki/%E8%B5%A4%E6%B1%A0%E6%83%85%E5%A0%B1%E9%87%8F%E8%A6%8F%E6%BA%96" target="_blank" rel="noopener">AIC</a>以来の世界観になっています。</li>
+<li>経験的にも、訓練誤差が良いのにテスト誤差がとても悪いという現象（過学習）があることが良く知られていて、モデル選択や正則化といったツールが実務上も欠かせない存在になっています。</li>
+</ul>
+<p>しかし、「汎化」や「過学習しないようにモデルは小さく」というのはあくまで <strong>ミームではあるものの公理ではなく</strong>、現実にはもっと色々なことがありえます。</p>
+<p>例えば深層学習では、標準的な意味ではモデルが大きすぎるが、依然として<a href="https://arxiv.org/abs/1611.03530" target="_blank" rel="noopener">うまく行っているように見える現象が報告</a>されるなど、従来からの「過学習のストーリー」には乗らない例が増えていますし、それに伴って <a href="https://arxiv.org/abs/1710.05468" target="_blank" rel="noopener">汎化の定義を再考する試み</a> なども行われています。要するに、「こういう指針でやればだいたいの場合うまく行く」という思想のようなものをアップデートする必要が出てきている、ということかと認識しています。</p>
+<h1 id="2018年の汎化理論：関数クラスの拡大"><a href="#2018年の汎化理論：関数クラスの拡大" class="headerlink" title="2018年の汎化理論：関数クラスの拡大"></a>2018年の汎化理論：関数クラスの拡大</h1><p>ここで、ちょっと回帰の問題を考えてみます。</p>
+<p>データとして、$(x_i, y_i)$ ($i = 1, \ldots, n$) という入出力ペアが与えられたとします。真の法則は $y_i = f(x_i) + noise$ というな形をしているとして、関数 $f(x)$ を推定する問題を考えます。</p>
+<p>ニューラルネットの構造を適当にひとつ固定して、パラメータを変えることで表現できる関数の全体を $\mathcal{F}$ としたとき、最小二乗法によるフィット<br>$$<br>\hat{f} \in \arg \min_{f \in \mathcal{F}} \sum_{i=1}^n (y_i - f(x_i))^2<br>\tag{1}<br>$$<br>によって関数を推定することができます。明示的な正則化などは、数式の上ではひとまず考えないことにします。</p>
+<p>この最小化問題が厳密に解けたと仮定して、予測誤差の意味でどれだけよいかを考えます。</p>
+<p>統計学においては、このような問題は、いわゆるノンパラメトリック回帰と呼ばれている分野の守備範囲でした。ノンパラ回帰の理論は、「関数が滑らかである（与えられた回数微分可能である）」という仮定に負っていた部分が多く、最適性などもその範疇で考えられてきました。しかし、このままでは、ニューラルネットを学習して作った関数$\hat{f}$ が「他と比べてことさらに良い」ことの理由を答えるのが難しくなってしまいます。仮定が現実と合わなくなったケースですね。</p>
+<p>そこで、関数が大域的に滑らかであるという仮定から離れ、現実のデータに即して「よりカスタマイズされた関数構造」を考えることでニューラルネットの良さを説明しよう、というアイデアがあります。この流れで、前述の<a href="https://ismseminar.github.io/fimi2018/" target="_blank" rel="noopener">統数研ワークショップ</a> の講演の中から最近の研究を挙げると：</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1708.06633" target="_blank" rel="noopener">Schmidt-Hieber (2017)</a> では、疎な入力をもつ滑らかな関数のcompositionで書けるクラス （<a href="http://pub.math.leidenuniv.nl/~schmidthieberaj/research.html" target="_blank" rel="noopener">紹介ページ</a>）</li>
+<li><a href="https://arxiv.org/abs/1705.10182" target="_blank" rel="noopener">Suzuki (2017)</a> では、ある積分作用素の固有値の減衰が速い関数クラス</li>
+<li><a href="https://arxiv.org/abs/1802.04474" target="_blank" rel="noopener">Imaizumi &amp; Fukumizu (2018)</a> では、区分的に滑らかな関数クラス（<a href="https://sites.google.com/view/mimaizumi/research/kaisetsu" target="_blank" rel="noopener">紹介ページ</a>）</li>
+</ul>
+<p>といったように、従来の仮定とは異なる構造をもった関数クラスに対する汎化能力が議論されるようになっています。</p>
+<p>ところで、最適化問題 (1) は非凸最適化になり、一般には大域最適解を得ることができません (computableかどうかわからない)。最適化の問題が絡んだ場合の情報はかなり錯綜している印象で、「実はすべての局所解は大域解だから最適化の問題はない」「SGDなどの特定のアルゴリズムが汎化の意味でよい局所解を自動的に選択するから問題ない」などの意見があるようです（文献は割愛）。</p>
+<h1 id="感想：何がうまくいっていないか"><a href="#感想：何がうまくいっていないか" class="headerlink" title="感想：何がうまくいっていないか"></a>感想：何がうまくいっていないか</h1><p>従来の考え方のままでは、現状何がうまくいかなくなっているのかを考えてみると、要するに</p>
+<ol>
+<li>理論で使われていた仮定が現実と合わなくなった（定式化の欠陥）</li>
+<li>不安定な方法やヒューリスティックスに頼っている（アルゴリズムの欠陥）</li>
+</ol>
+<p>ということなんじゃないかなあと思います。</p>
+<p>定式化に欠陥があると、理論的に最適な手法と現実に起きていることにズレが生じますし、どんなに解析を精密にしても深層学習が強い理由はそこにはない、ということになってしまいます。そこで、上でレビューしたように、新しい適切な問題設定を探すということが理論面での大きな目標のひとつになるのかな、という所感です。</p>
+<p>また、アルゴリズムが不安定だと結果の再現性がなくなってしまいます。そうすると分野全体としても、いろいろな結果から示唆を得て新しい思想を固める作業に時間がかかってしまう気がします。会議の締め切り前になると、エポックごとに誤差が上がった下がったと一喜一憂する人々の姿が世界各地で見られるそうですが、やはり、最適化手法の側にも理論保証がついていないと安心して夜も眠れないのではないかと思います。</p>
+<p>というわけで次回はアルゴリズムの話を書きたいです。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/blog/categories/2018-3/">2018/3</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/機械学習/">機械学習</a>, <a href="/blog/tags/深層学習/">深層学習</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>

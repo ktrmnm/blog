@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>最近出した論文 (劣モジュラ正則化とかGANとか) | やっていく</title>
+  <meta name="author" content="Kentaro MINAMI">
+  
+  <meta name="description" content="ブログを約2年放置してしまいました (前回は2018/4/30)。
+この2年ほどのあいだに、自分の環境 (職場、家庭、学位) がいろいろ変わって大変でした。しかしそろそろ仕事以外の勉強も再開していきたいので、リハビリがてら色々書いていこうと思います。
+久しぶりすぎて何から書き始めるか迷ったのですが、">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="最近出した論文 (劣モジュラ正則化とかGANとか)">
+  <meta property="og:site_name" content="やっていく">
+
+  
+    <meta property="og:image" content="undefined">
+  
+
+  <link href="/blog/favicon.png" rel="icon">
+  <link rel="alternate" href="/blog/atom.xml" title="やっていく" type="application/atom+xml">
+  <link rel="stylesheet" href="/blog/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+</html>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/blog/">やっていく</a></h1>
+  <h2><a href="/blog/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/blog/">Home</a></li>
+    
+      <li><a href="/blog/about">About</a></li>
+    
+      <li><a href="/blog/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2020-03-21T06:46:55.000Z"><a href="/blog/2020/03/21/20200321-recent-publications/">2020-03-21</a></time>
+      
+      
+  
+    <h1 class="title">最近出した論文 (劣モジュラ正則化とかGANとか)</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>ブログを約2年放置してしまいました (前回は2018/4/30)。</p>
+<p>この2年ほどのあいだに、自分の環境 (職場、家庭、学位) がいろいろ変わって大変でした。しかしそろそろ仕事以外の勉強も再開していきたいので、リハビリがてら色々書いていこうと思います。</p>
+<p>久しぶりすぎて何から書き始めるか迷ったのですが、自分が関わった論文が直近1年の間に何本か出たので、それらについて書きます。</p>
+<h1 id="劣モジュラ正則化"><a href="#劣モジュラ正則化" class="headerlink" title="劣モジュラ正則化"></a>劣モジュラ正則化</h1><p>劣モジュラ正則化 (submodular regularization) というテーマで論文を2つ書きました。これは自分の博士課程の研究です。</p>
+<p>劣モジュラ正則化とは何かというと、LassoとかGroup lasso, Fused lassoのような凸正則化法を拡張した概念です。これらの正則化法は、推定したいパラメータに対する構造的スパース性 (structured sparsity) を誘導するものです。例えば、線形回帰におけるLassoは</p>
+<p>$$<br>  \min_{\theta \in \mathbb{R}^p} \frac{1}{2} | y - X \theta |^2_2 + \lambda | \theta |_1<br>$$</p>
+<p>というような凸最適化問題の解として定義されるものですが (※記号の説明は略)、ここでL1正則化項はパラメータ $\theta$ に対するcoordinate sparsity (いわゆる普通のsparsity) を誘導します。しかし、もっと「構造のあるスパース性」を考えることもできます。例えば、generalized fused lassoという手法では</p>
+<p>$$<br>  \sum_{(i, j) \in E} |\theta_i - \theta_j|<br>$$</p>
+<p>という正則化項を利用しますが、これは与えられたグラフ $G = (V, E)$ 上で区分的に定数となるような性質を誘導します。</p>
+<p>こういった正則化項が、実は <a href="https://en.wikipedia.org/wiki/Submodular_set_function" target="_blank" rel="noopener">劣モジュラ関数</a> と関係があるということを指摘した <a href="https://papers.nips.cc/paper/3933-structured-sparsity-inducing-norms-through-submodular-functions" target="_blank" rel="noopener">2010年の論文</a> があります。具体的には、Lasso, Group lasso, Fused lassoといったような代表的な手法も含む比較的広いクラスの正則化項が、劣モジュラ関数の凸緩和 (Lovász extension) として書けます。</p>
+<p>このテーマについて本も出ているので、興味があればそちらを参照するのがわかりやすいかと思います。</p>
+<ul>
+<li>河原, 永野. <a href="https://www.kspub.co.jp/book/detail/1529090.html" target="_blank" rel="noopener">劣モジュラ最適化と機械学習</a></li>
+<li>F. Bach. <a href="https://www.nowpublishers.com/article/Details/MAL-039" target="_blank" rel="noopener">Learning with Submodular Functions: A Convex Optimization Perspective</a></li>
+</ul>
+<p>こういった一般化をするひとつの利点として、proximal operator (<a href="http://ktrmnm.github.io/blog/2018/04/30/201804-proximal/">以前のブログ</a> でも書きました) の計算が劣モジュラ関数最小化と関係のあるアルゴリズムで解けるという話があります。というわけで、劣モジュラ正則化というのは、数理統計 (Lasso)、機械学習 (structured sparsityのモデリング)、離散最適化 (劣モジュラ関数最小化) のインターセクションにある研究テーマになっているというわけです。自分が博士課程に進学した当初、こういう分野横断的な話が面白そうだなと思って勉強してましたが、大学で <a href="https://www.elsevier.com/books/submodular-functions-and-optimization/fujishige/978-0-444-52086-9" target="_blank" rel="noopener">劣モジュラ関数の教科書</a> (すごく難しい) などを輪読したりしているうちに最適化の関係ない勉強が楽しくなり、どんどん脱線して収拾がつかなくなってきました。博士課程あるあるっぽい話ですが、皆さん気をつけましょう (?)</p>
+<p>自分の研究ですが、以下のことをしました。（圧縮した説明）</p>
+<ol>
+<li>Degrees of freedomの研究 (<a href="https://www.sciencedirect.com/science/article/pii/S0047259X18305906?via%3Dihub" target="_blank" rel="noopener">論文はこちら</a> ): Degrees of freedomというのは、線形回帰モデルの推定量に対して定義される「実効パラメータ数」のような概念です。あるいは、fixed design regressionにおいてバイアスバリアンス分解したときの、バリアンスに相当する部分です。具体例としては、<a href="https://en.wikipedia.org/wiki/Mallows%27s_Cp" target="_blank" rel="noopener">Mallows’ Cp</a> やAICによるモデル選択では「変数の数」が罰則になりますが、実際にGaussian noiseの設定でOLSのdegrees of freedomを計算すると変数の数が出てきます。一方、degrees of freedom自体は非線形推定量に対しても定義することができて、例えば<a href="https://projecteuclid.org/euclid.aos/1194461726" target="_blank" rel="noopener">Lassoでは解の非ゼロパラメータ数と一致する</a> ことなどが知られています。この研究では、劣モジュラ正則化に対してdegrees of freedomを統一的に計算する公式を導出しています。とくに、計算するアルゴリズムが劣モジュラ関数の選択に依らず、「解の成分の中でユニークな値を数える」という方法でdegrees of freedomが計算できます (現実にはソートの計算量があればOK)。こういった「アルゴリズム的な性質」が劣モジュラ正則化に特有なところで、一般の凸正則化ではこうなるとは限らないのが面白いところです。</li>
+<li>「区分単調信号推定」の研究 (<a href="https://arxiv.org/abs/1905.01840" target="_blank" rel="noopener">論文はこちら</a> ): <a href="https://www.stat.cmu.edu/~ryantibs/papers/neariso.pdf" target="_blank" rel="noopener">Nearly-isotonic regression</a> という手法があり、それについて解析した論文です。単調関数の推定手法で <a href="https://en.wikipedia.org/wiki/Isotonic_regression" target="_blank" rel="noopener">isotonic regression</a> という歴史ある手法があるのですが、それを正則化法に拡張した版がnearly-isotonic regressionです。もともと「単調増加である」というハードな制約があったところを、正則化法にすることによってソフトな制約として扱っているので、ある程度構造的なmisspecificationがあることも許されます。<a href="https://cran.r-project.org/web/packages/neariso/index.html" target="_blank" rel="noopener">Rのパッケージ</a> もあります。自分の研究の文脈としては、実はこのnearly-isotonic regressionは劣モジュラ正則化の一例になっているので、その事実を利用してアルゴリズムを導出したり、上の研究成果を使ってdegrees of freedomを導出したりできます。この論文としては、区分単調信号 (piecewise monotone signal) の推定という設定を考えて、その状況下でのリスクバウンドを導出したりしています。</li>
+</ol>
+<p>博士課程は、(つい最近の生々しい出来事なのであまり整理して語れないですが) まあまあつらかったです。能力的な意味では、自分の場合はコードを書いたり英語での論文ライティングがボトルネックになっていると感じていたので、たくさん練習しようと試みました。が、勉強とか「素振り」ばかりしていると、その間アウトプットが全然ないので、普通にどんどん心が折れていきます…。単著論文中心の研究生活だったのですが、とはいえ、自分に対する報酬の設計はうまくやったほうが精神衛生上よかったなと思いました。また、研究の一貫で劣モジュラ最小化のCython実装とかをかなり時間をかけて書いてました。これは、残念ながら論文成果にはほとんど繋がっていないのですが、劣モ最小化のプログラムは世の中にあまり存在しないはずなので、せめて整理してGithubにでも上げておきたい…が、なかなか時間がとれず、という感じであります。</p>
+<h1 id="GAN"><a href="#GAN" class="headerlink" title="GAN"></a>GAN</h1><p>2019年4月に<a href="https://preferred.jp/ja/" target="_blank" rel="noopener">PFN</a>という会社に入社し、業務で研究をしています。依然として論文も書いたりしており、昨年度はインターン生と書いた論文についての<a href="https://tech.preferred.jp/ja/blog/smoothness-and-stability-in-gans/" target="_blank" rel="noopener">解説記事を会社のブログに書いたりしました</a>。これはGANの理論についての研究ですが、こういった複雑なアウトプットを出せる生成モデルにはずっと興味があるので、今後も何かできたらいいなと思っています。ちなみに、論文が採択されたICLR2020はエチオピア (!) で開催されるはずだったのですが、COVID19の影響で現地開催はなくなってしまいました。どうなることやら…</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/blog/tags/機械学習/">機械学習</a>, <a href="/blog/tags/統計学/">統計学</a>, <a href="/blog/tags/日記/">日記</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/categories/2016-3/">2016/3</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-4/">2016/4</a><small>3</small></li>
+  
+    <li><a href="/blog/categories/2016-5/">2016/5</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-8/">2016/8</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2016-9/">2016/9</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2017-1/">2017/1</a><small>1</small></li>
+  
+    <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/blog/tags/C/">C++</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/MathJax/">MathJax</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/日記/">日記</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適化/">最適化</a><small>1</small></li>
+  
+    <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+  
+    <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
+  
+    <li><a href="/blog/tags/確率論/">確率論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/経験過程論/">経験過程論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/統計学/">統計学</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Kentaro MINAMI
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/blog/js/jquery.imagesloaded.min.js"></script>
+<script src="/blog/js/gallery.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"Macros":{"dd":"\\mathrm{d}","RR":"\\mathbb{R}","argmax":"\\operatorname*{argmax}"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+</body>
+</html>
