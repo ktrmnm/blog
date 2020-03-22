@@ -6,7 +6,7 @@
   <link href="/blog/atom.xml" rel="self"/>
   
   <link href="http://ktrmnm.github.io/blog/"/>
-  <updated>2020-03-21T09:43:19.022Z</updated>
+  <updated>2020-03-22T11:21:07.296Z</updated>
   <id>http://ktrmnm.github.io/blog/</id>
   
   <author>
@@ -17,11 +17,43 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>(勉強メモ) Information bottleneck (1)</title>
+    <link href="http://ktrmnm.github.io/blog/2020/03/22/20200322-information-bottleneck/"/>
+    <id>http://ktrmnm.github.io/blog/2020/03/22/20200322-information-bottleneck/</id>
+    <published>2020-03-22T06:59:07.000Z</published>
+    <updated>2020-03-22T11:21:07.296Z</updated>
+    
+    <content type="html"><![CDATA[<p>Information bottleneck関係の個人的勉強メモです。</p><p>ブログでは、書くことの心理障壁を下げるために以前よりも勉強内容を小出しにしていくことを考えており、今日の目標は以下の元論文の主張をまとめておくことです。</p><ul><li>Tishby, Pereira, and Bialek (2000). The information bottleneck method. <a href="https://arxiv.org/abs/physics/0004057" target="_blank" rel="noopener">(URL)</a></li></ul><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>Information bottleneck法 (Tishby et al. 2000) とは、<a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="noopener">レート歪み理論</a> を一般化した概念である。レート歪み理論は非可逆圧縮の達成限界についての理論で、符号の空間のサイズ (レート) と復号時のエラー (歪み) の間のトレードオフを記述したものである。具体的に、このトレードオフは、「レート歪み関数」という、相互情報量をともなう最適化問題の最適値によって書ける。レート歪み関数の定義には、復号時のエラーを定義するための損失関数 (歪み関数) を指定する必要があるが、実用上は適切な損失関数を選ぶことが難しいことがある。Information bottleneck法では、$X$ に対する損失関数は陽に指定せず、その代わりに、符号のサイズは小さくしつつ別の信号 $Y$ に関係する情報を最大限保つという目的関数を考えることで、「$X$ の中の $Y$ に関係する情報」を抽出する問題を定式化する。例えば、$X$ を入力として $Y$ を予測する機械学習の問題があるとき、$Y$ の予測のために必要な情報はなるべく失わずに、最小限の大きさの特徴量 $\hat{X}$ を抽出したいというような状況が考えられるが、それを情報理論 (レート歪み理論) 的に解釈して定式化したのがinformation bottleneckであるというイメージ。</p><p>レート歪み理論の歪み (distortion) は「ひずみ」と読みます。</p><h1 id="Information-bottleneckの基礎"><a href="#Information-bottleneckの基礎" class="headerlink" title="Information bottleneckの基礎"></a>Information bottleneckの基礎</h1><h2 id="レート歪み理論"><a href="#レート歪み理論" class="headerlink" title="レート歪み理論"></a>レート歪み理論</h2><p>確率変数 $X$ を有限集合に値をとる符号に圧縮したい。$X$ の分布 $p(x)$ は既知とする。エンコーダーとデコーダーは確率的でもよいとし、まず (i) エンコーダーによって $X$ を $Z$ に符号化し、次に (ii) デコーダーによって $Z$ を $\hat{X}$ に復号化するプロセスを、まとめて条件付き分布 $p(\hat{X} \mid X)$ で表現するものとする。このプロセスの良さをはかるために、損失関数 $d$ を使って</p><p>$$<br>    D = \mathbb{E} [d(X, \hat{X})]<br>$$</p><p>によって損失を定義する。</p><p>$Z$ が値をとる空間のcardinalityの対数を $R$ と書き、レートと呼ぶ。原理的には、$R$ を増やすと信号 $X$ を無限に細かく離散化できるので、歪み $D$ は小さくなるはずである。逆に、$R$ を減らすと、表現力の低い符号によって $X$ の挙動を説明しなければならなくなるので、$D$ は大きくなる。したがって $R$ と $D$ にはトレードオフがあるが、このトレードオフの意味で最適なフロンティアがどこにあるか知りたい。$D &gt; 0$ を与えたときに、可能な限り最も短い $R$ を $R(D)$ と書く (これをレート歪み関数という)。</p><p>レート歪み理論によると、$R(D)$ は次の最適化問題の最適値に等しい。</p><p>$$<br>    \min_{p(\hat{x} \mid x)} I(X, \hat{X})<br>    \text{ s.t. } \mathbb{E} [d(X, \hat{X})] \leq D<br>    \tag{1}<br>$$</p><p>つまり、歪みが $D$ 以下に抑えられるようなエンコーダー/デコーダー対 $p(\hat{x} \mid x)$ のなかで、$X$ と $\hat{X}$ の相互情報量の最小値が、ぎりぎり達成可能な符号のサイズに対応している。</p><p>たまたま最近Cover and Thomasの輪読会をやったので、証明はその本で読んだ。$R \geq I(X, \hat{X})$ のようなことは不等式評価ですぐにわかるのだけど、達成可能性のほうは具体的なエンコーダー/デコーダーを作らなければならず、ちょっと込み入っているように感じた。他の方法はないのかと思って2冊目も確認したけど、だいたい同じ証明だった。</p><ul><li>Cover and Thomas. <a href="https://www.amazon.co.jp/dp/0471241954/ref=cm_sw_r_tw_dp_U_x_2hZDEb19PR3PV" target="_blank" rel="noopener">Elements of Information Theory</a> のChapter 10</li><li>Han. <a href="https://www.amazon.co.jp/Information-Spectrum-Information-Stochastic-Modelling-Probability/dp/3642078125" target="_blank" rel="noopener">Information-Spectrum Methods in Information Theory</a> のTheorem 5.2.1</li></ul><h2 id="レート歪み関数の計算"><a href="#レート歪み関数の計算" class="headerlink" title="レート歪み関数の計算"></a>レート歪み関数の計算</h2><p>現実には (1) の最適化問題の解や最適値をclosed formで計算するのは難しいので、数値計算のアルゴリズムが提案されている。ここでは、<a href="https://arxiv.org/abs/physics/0004057" target="_blank" rel="noopener">Tishby et al. (2000)</a> で紹介されているBlahut–Arimoto (BA) アルゴリズムについて書く。</p><p>(1) のLagrangianを書くと<br>$$<br>    I(X, \hat{X}) + \beta (\mathbb{E} [d(X, \hat{X})] - D)<br>    \tag{2}<br>$$<br>となる。$\beta$ はLagrange乗数である。</p><p>ここで、($D$ そのものではなく) $\beta &gt; 0$ を与えたときにLagrangianを最小化する問題を考えてみる。Lagrangianの $p(\hat{x} \mid x)$ に関する変分を考えると、停留条件は</p><p>$$<br>    p(\hat{x} \mid x) \propto p(\hat{x}) \exp( - \beta d(\hat{x}, x))<br>$$</p><p>のようになる。この停留条件の式に $p_t(\hat{x} \mid x)$ を再代入していくアルゴリズムを考えると、やがて不動点に収束することが示される。これがBAアルゴリズムと呼ばれている。</p><p>BAアルゴリズムは通信路容量を計算するのにも使われる。探したら以下のスライドがあった。収束性についてちゃんと勉強していないので、そのうち勉強したい。</p><ul><li><a href="http://www.inc.cuhk.edu.hk/InformationTheory/files/Abridged/Ch_9.pdf" target="_blank" rel="noopener">スライド</a> (by Raymond W. Yeung)</li></ul><h2 id="Information-bottleneck-method"><a href="#Information-bottleneck-method" class="headerlink" title="Information bottleneck method"></a>Information bottleneck method</h2><p>現実には歪み関数 $d$ として適切なものが何であるのか判断するのが難しい状況がある。代わりに、「ある別の変数 $Y$ に関する情報を最大限保ちつつなるべく小さな空間にエンコードする」という問題を考えるというのがinformation bottleneckの発想である。具体的には、(2) の代わりに</p><p>$$<br>    I(X, \hat{X}) - \beta I(\hat{X}, Y)<br>    \tag{3}<br>$$</p><p>を最小化する $p(\hat{x} \mid x)$ を考える。それぞれの項について考えてみると、</p><ul><li>$I(X, \hat{X})$ はもとのレート歪み理論の定式化 (2) にも出てくる項で、これが小さければ小さいほど圧縮率が高い符号を意味する。例えば、$X$ を1点集合に潰してしまうのが自明に最も短い符号だけど、このとき $I(X, \hat{X}) = 0$ となる。逆に、$X$ を無限に細かくquantizeすれば無限に高精度で復号できるが、上限値として $I(X, \hat{X}) = I(X, X) = H(X)$ にどんどん近づいていくはず。</li><li>$- \beta I(\hat{X}, Y)$ は符号化によって $Y$ の情報をなるべく失わないための正則化である。データ処理不等式から一般に $I(X, Y) \geq I(\hat{X}, Y)$ となるから、エンコード/デコードの処理で $Y$ に関する情報が増えることはない。</li></ul><p>よって、第1項を最小化することはなるべく小さく圧縮することを目指すのに対して、第2項を最小化することはなるべく元の情報を保つことを目指すので、どこかに均衡点が発生する。</p><p>Information bottleneckの式 (3) の停留条件を書くと、</p><p>$$<br>    p(\hat{x} \mid x) \propto p(\hat{x}) \exp( - \beta D_{KL}(p(y \mid x) \parallel p(y \mid \hat{x})))<br>$$</p><p>となる。よって、information bottleneck法では、結果的に $D_{KL}(p(y \mid x) \parallel p(y \mid \hat{x}))$ を歪み関数として採用したことになっているといえる。</p><p><a href="https://arxiv.org/abs/physics/0004057" target="_blank" rel="noopener">元論文</a> では、(3) を解くためのBlahut–Arimoto型のアルゴリズムも与えられている。</p><h1 id="次回メモ"><a href="#次回メモ" class="headerlink" title="次回メモ"></a>次回メモ</h1><p>もともと、最近の機械学習 or 深層学習の文脈で、information bottleneckが (思想として) どう理解されているのか気になったので、次回はより最近の論文をランダムに読みます。特に、深層学習の汎化の説明として、Tishby and Zaslavsky (2015) がinformation planeという概念を導入しており、そのあたりの整理が目標です。</p><ul><li>Tishby and Zaslavsky (2015). Deep Learning and the Information Bottleneck Principle. <a href="https://arxiv.org/abs/1503.02406" target="_blank" rel="noopener">(URL)</a></li><li>Shwartz-Ziv and Tishby (2017). Opening the Black Box of Deep Neural Networks via Information. <a href="https://arxiv.org/abs/1703.00810" target="_blank" rel="noopener">(URL)</a></li><li>Saxe et al. (2018). On the Information Bottleneck Theory of Deep Learning. <a href="https://openreview.net/forum?id=ry_WPG-A-" target="_blank" rel="noopener">(URL)</a></li><li>Alemi et al. (2016). Deep Variational Information Bottleneck. <a href="https://arxiv.org/abs/1612.00410" target="_blank" rel="noopener">(URL)</a></li><li><a href="https://github.com/yoheikikuta/paper-reading/issues/28" target="_blank" rel="noopener">yoheikikutaさんのメモ (The information bottleneck method)</a></li><li><a href="https://github.com/yoheikikuta/paper-reading/issues/26" target="_blank" rel="noopener">yoheikikutaさんのメモ (Deep Learning and the Information Bottleneck Principle)</a></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;Information bottleneck関係の個人的勉強メモです。&lt;/p&gt;
+&lt;p&gt;ブログでは、書くことの心理障壁を下げるために以前よりも勉強内容を小出しにしていくことを考えており、今日の目標は以下の元論文の主張をまとめておくことです。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Tish
+      
+    
+    </summary>
+    
+      <category term="2020/3" scheme="http://ktrmnm.github.io/blog/categories/2020-3/"/>
+    
+    
+      <category term="機械学習" scheme="http://ktrmnm.github.io/blog/tags/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/"/>
+    
+      <category term="個人用メモ" scheme="http://ktrmnm.github.io/blog/tags/%E5%80%8B%E4%BA%BA%E7%94%A8%E3%83%A1%E3%83%A2/"/>
+    
+      <category term="情報理論" scheme="http://ktrmnm.github.io/blog/tags/%E6%83%85%E5%A0%B1%E7%90%86%E8%AB%96/"/>
+    
+  </entry>
+  
+  <entry>
     <title>最近出した論文 (劣モジュラ正則化とかGANとか)</title>
     <link href="http://ktrmnm.github.io/blog/2020/03/21/20200321-recent-publications/"/>
     <id>http://ktrmnm.github.io/blog/2020/03/21/20200321-recent-publications/</id>
     <published>2020-03-21T06:46:55.000Z</published>
-    <updated>2020-03-21T09:43:19.022Z</updated>
+    <updated>2020-03-22T06:59:42.350Z</updated>
     
     <content type="html"><![CDATA[<p>ブログを約2年放置してしまいました (前回は2018/4/30)。</p><p>この2年ほどのあいだに、自分の環境 (職場、家庭、学位) がいろいろ変わって大変でした。しかしそろそろ仕事以外の勉強も再開していきたいので、リハビリがてら色々書いていこうと思います。</p><p>久しぶりすぎて何から書き始めるか迷ったのですが、自分が関わった論文が直近1年の間に何本か出たので、それらについて書きます。</p><h1 id="劣モジュラ正則化"><a href="#劣モジュラ正則化" class="headerlink" title="劣モジュラ正則化"></a>劣モジュラ正則化</h1><p>劣モジュラ正則化 (submodular regularization) というテーマで論文を2つ書きました。これは自分の博士課程の研究です。</p><p>劣モジュラ正則化とは何かというと、LassoとかGroup lasso, Fused lassoのような凸正則化法を拡張した概念です。これらの正則化法は、推定したいパラメータに対する構造的スパース性 (structured sparsity) を誘導するものです。例えば、線形回帰におけるLassoは</p><p>$$<br>  \min_{\theta \in \mathbb{R}^p} \frac{1}{2} | y - X \theta |^2_2 + \lambda | \theta |_1<br>$$</p><p>というような凸最適化問題の解として定義されるものですが (※記号の説明は略)、ここでL1正則化項はパラメータ $\theta$ に対するcoordinate sparsity (いわゆる普通のsparsity) を誘導します。しかし、もっと「構造のあるスパース性」を考えることもできます。例えば、generalized fused lassoという手法では</p><p>$$<br>  \sum_{(i, j) \in E} |\theta_i - \theta_j|<br>$$</p><p>という正則化項を利用しますが、これは与えられたグラフ $G = (V, E)$ 上で区分的に定数となるような性質を誘導します。</p><p>こういった正則化項が、実は <a href="https://en.wikipedia.org/wiki/Submodular_set_function" target="_blank" rel="noopener">劣モジュラ関数</a> と関係があるということを指摘した <a href="https://papers.nips.cc/paper/3933-structured-sparsity-inducing-norms-through-submodular-functions" target="_blank" rel="noopener">2010年の論文</a> があります。具体的には、Lasso, Group lasso, Fused lassoといったような代表的な手法も含む比較的広いクラスの正則化項が、劣モジュラ関数の凸緩和 (Lovász extension) として書けます。</p><p>このテーマについて本も出ているので、興味があればそちらを参照するのがわかりやすいかと思います。</p><ul><li>河原, 永野. <a href="https://www.kspub.co.jp/book/detail/1529090.html" target="_blank" rel="noopener">劣モジュラ最適化と機械学習</a></li><li>F. Bach. <a href="https://www.nowpublishers.com/article/Details/MAL-039" target="_blank" rel="noopener">Learning with Submodular Functions: A Convex Optimization Perspective</a></li></ul><p>こういった一般化をするひとつの利点として、proximal operator (<a href="http://ktrmnm.github.io/blog/2018/04/30/201804-proximal/">以前のブログ</a> でも書きました) の計算が劣モジュラ関数最小化と関係のあるアルゴリズムで解けるという話があります。というわけで、劣モジュラ正則化というのは、数理統計 (Lasso)、機械学習 (structured sparsityのモデリング)、離散最適化 (劣モジュラ関数最小化) のインターセクションにある研究テーマになっているというわけです。自分が博士課程に進学した当初、こういう分野横断的な話が面白そうだなと思って勉強してましたが、大学で <a href="https://www.elsevier.com/books/submodular-functions-and-optimization/fujishige/978-0-444-52086-9" target="_blank" rel="noopener">劣モジュラ関数の教科書</a> (すごく難しい) などを輪読したりしているうちに最適化の関係ない勉強が楽しくなり、どんどん脱線して収拾がつかなくなってきました。博士課程あるあるっぽい話ですが、皆さん気をつけましょう (?)</p><p>自分の研究ですが、以下のことをしました。（圧縮した説明）</p><ol><li>Degrees of freedomの研究 (<a href="https://www.sciencedirect.com/science/article/pii/S0047259X18305906?via%3Dihub" target="_blank" rel="noopener">論文はこちら</a> ): Degrees of freedomというのは、線形回帰モデルの推定量に対して定義される「実効パラメータ数」のような概念です。あるいは、fixed design regressionにおいてバイアスバリアンス分解したときの、バリアンスに相当する部分です。具体例としては、<a href="https://en.wikipedia.org/wiki/Mallows%27s_Cp" target="_blank" rel="noopener">Mallows’ Cp</a> やAICによるモデル選択では「変数の数」が罰則になりますが、実際にGaussian noiseの設定でOLSのdegrees of freedomを計算すると変数の数が出てきます。一方、degrees of freedom自体は非線形推定量に対しても定義することができて、例えば<a href="https://projecteuclid.org/euclid.aos/1194461726" target="_blank" rel="noopener">Lassoでは解の非ゼロパラメータ数と一致する</a> ことなどが知られています。この研究では、劣モジュラ正則化に対してdegrees of freedomを統一的に計算する公式を導出しています。とくに、計算するアルゴリズムが劣モジュラ関数の選択に依らず、「解の成分の中でユニークな値を数える」という方法でdegrees of freedomが計算できます (現実にはソートの計算量があればOK)。こういった「アルゴリズム的な性質」が劣モジュラ正則化に特有なところで、一般の凸正則化ではこうなるとは限らないのが面白いところです。</li><li>「区分単調信号推定」の研究 (<a href="https://arxiv.org/abs/1905.01840" target="_blank" rel="noopener">論文はこちら</a> ): <a href="https://www.stat.cmu.edu/~ryantibs/papers/neariso.pdf" target="_blank" rel="noopener">Nearly-isotonic regression</a> という手法があり、それについて解析した論文です。単調関数の推定手法で <a href="https://en.wikipedia.org/wiki/Isotonic_regression" target="_blank" rel="noopener">isotonic regression</a> という歴史ある手法があるのですが、それを正則化法に拡張した版がnearly-isotonic regressionです。もともと「単調増加である」というハードな制約があったところを、正則化法にすることによってソフトな制約として扱っているので、ある程度構造的なmisspecificationがあることも許されます。<a href="https://cran.r-project.org/web/packages/neariso/index.html" target="_blank" rel="noopener">Rのパッケージ</a> もあります。自分の研究の文脈としては、実はこのnearly-isotonic regressionは劣モジュラ正則化の一例になっているので、その事実を利用してアルゴリズムを導出したり、上の研究成果を使ってdegrees of freedomを導出したりできます。この論文としては、区分単調信号 (piecewise monotone signal) の推定という設定を考えて、その状況下でのリスクバウンドを導出したりしています。</li></ol><p>博士課程は、(つい最近の生々しい出来事なのであまり整理して語れないですが) まあまあつらかったです。能力的な意味では、自分の場合はコードを書いたり英語での論文ライティングがボトルネックになっていると感じていたので、たくさん練習しようと試みました。が、勉強とか「素振り」ばかりしていると、その間アウトプットが全然ないので、普通にどんどん心が折れていきます…。単著論文中心の研究生活だったのですが、とはいえ、自分に対する報酬の設計はうまくやったほうが精神衛生上よかったなと思いました。また、研究の一貫で劣モジュラ最小化のCython実装とかをかなり時間をかけて書いてました。これは、残念ながら論文成果にはほとんど繋がっていないのですが、劣モ最小化のプログラムは世の中にあまり存在しないはずなので、せめて整理してGithubにでも上げておきたい…が、なかなか時間がとれず、という感じであります。</p><h1 id="GAN"><a href="#GAN" class="headerlink" title="GAN"></a>GAN</h1><p>2019年4月に<a href="https://preferred.jp/ja/" target="_blank" rel="noopener">PFN</a>という会社に入社し、業務で研究をしています。依然として論文も書いたりしており、昨年度はインターン生と書いた論文についての<a href="https://tech.preferred.jp/ja/blog/smoothness-and-stability-in-gans/" target="_blank" rel="noopener">解説記事を会社のブログに書いたりしました</a>。これはGANの理論についての研究ですが、こういった複雑なアウトプットを出せる生成モデルにはずっと興味があるので、今後も何かできたらいいなと思っています。ちなみに、論文が採択されたICLR2020はエチオピア (!) で開催されるはずだったのですが、COVID19の影響で現地開催はなくなってしまいました。どうなることやら…</p>]]></content>
     
@@ -36,10 +68,12 @@
     
     </summary>
     
+      <category term="2020/3" scheme="http://ktrmnm.github.io/blog/categories/2020-3/"/>
     
-      <category term="機械学習" scheme="http://ktrmnm.github.io/blog/tags/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/"/>
     
       <category term="統計学" scheme="http://ktrmnm.github.io/blog/tags/%E7%B5%B1%E8%A8%88%E5%AD%A6/"/>
+    
+      <category term="機械学習" scheme="http://ktrmnm.github.io/blog/tags/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/"/>
     
       <category term="日記" scheme="http://ktrmnm.github.io/blog/tags/%E6%97%A5%E8%A8%98/"/>
     
@@ -238,9 +272,9 @@
       <category term="2016/8" scheme="http://ktrmnm.github.io/blog/categories/2016-8/"/>
     
     
-      <category term="機械学習" scheme="http://ktrmnm.github.io/blog/tags/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/"/>
-    
       <category term="統計学" scheme="http://ktrmnm.github.io/blog/tags/%E7%B5%B1%E8%A8%88%E5%AD%A6/"/>
+    
+      <category term="機械学習" scheme="http://ktrmnm.github.io/blog/tags/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/"/>
     
   </entry>
   

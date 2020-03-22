@@ -52,6 +52,43 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2016-04-24T11:09:47.000Z"><a href="/blog/2016/04/24/201604-transport-ineq-2/">2016-04-24</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2016/04/24/201604-transport-ineq-2/">輸送不等式から集中不等式を出す</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>Wasserstein距離がKLダイバージェンスで抑えられるという不等式のことを輸送不等式というのでした。例えば距離空間$(X, d)$上の確率測度$\mu$が$T_1(C)$を満たすというのは、任意の確率測度$\nu$に対して<br>$$<br>W_1(\mu, \nu) \leq \sqrt{C D_{KL} (\mu, \nu)}<br>\tag{1}<br>$$<br>が成り立つことをいいます。</p>
+<p>$f: X \to \mathbb{R}$がLipschitz関数のとき、<br>$$<br>\forall t &gt; 0, \quad \Pr [ f - \mathbb{E}f \geq t] \leq \exp \left( - \frac{C t^2}{2 \lVert f \rVert_{Lip}^2} \right)<br>\tag{2}<br>$$<br>が成り立つという性質を考えます。言葉でいえば「すべてのLipschitz関数の像がsub-Gaussianのように振る舞う」ということです。このような性質をGaussian concentrationと呼びます。</p>
+<p>実は、(1)ならば(2)が成り立ちます。</p>
+<h2 id="機械学習系分野ではどう役立っているか"><a href="#機械学習系分野ではどう役立っているか" class="headerlink" title="機械学習系分野ではどう役立っているか"></a>機械学習系分野ではどう役立っているか</h2><p>学習理論やランダム行列論などでは、Gaussian concentrationはとてもありがたい性質です。最終的なアプリケーションで欲しいのは、あくまで(2)の形の集中不等式なのですが、そうだとしても(1)の形で集中不等式の情報を保持していた方が何かと便利な場合があります。</p>
+<p>例えば、学習理論では、独立同分布に従うデータについての対数尤度や経験リスクがどう振る舞うかということに興味があるわけですが、要素技術としては「単体で(2)を満たすような確率分布の$n$個の直積が再び(2)を満たすかどうか」を考える必要が出てきます。そのとき、少なくとも(1)の形の不等式は直積操作で保存されるということがわかっているので都合が良いです。集中不等式界隈（？）では、こういう性質を不等式のテンソル化 (tensorization) と呼びます。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/blog/2016/04/24/201604-transport-ineq-2/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2016-04-12T11:22:56.000Z"><a href="/blog/2016/04/12/201604-generic-chaining-3/">2016-04-12</a></time>
       
       
@@ -283,6 +320,8 @@
   
     <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
   
+    <li><a href="/blog/categories/2020-3/">2020/3</a><small>2</small></li>
+  
   </ul>
 </div>
 
@@ -298,11 +337,13 @@
   
     <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
   
-    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>2</small></li>
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>3</small></li>
   
     <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
   
     <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
+  
+    <li><a href="/blog/tags/情報理論/">情報理論</a><small>1</small></li>
   
     <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
   
@@ -312,7 +353,7 @@
   
     <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
   
-    <li><a href="/blog/tags/機械学習/">機械学習</a><small>5</small></li>
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>6</small></li>
   
     <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
   
