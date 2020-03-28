@@ -52,6 +52,76 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2020-03-28T09:00:00.000Z"><a href="/blog/2020/03/28/20200328-information-plane/">2020-03-28</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/blog/2020/03/28/20200328-information-plane/">(勉強メモ) Information bottleneck (2)</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p><a href="http://ktrmnm.github.io/blog/2020/03/22/20200322-information-bottleneck/">前回</a>に引き続いてinformation bottleneck (IB) 関連の論文を読んでいました。</p>
+<p>特に、information plane (IP) という図の上で深層学習の挙動を説明する議論について調べていました。ひとまず現状把握という感じのメモで、細かいところは読んでいません。</p>
+<h1 id="Information-plane"><a href="#Information-plane" class="headerlink" title="Information plane"></a>Information plane</h1><h2 id="発端"><a href="#発端" class="headerlink" title="発端"></a>発端</h2><p>深層学習の挙動をinformation bottleneckの言葉で解析する研究の発端は、以下の2つだと思われる。</p>
+<ul>
+<li>[1] Tishby and Zaslavsky (2015). Deep Learning and the Information Bottleneck Principle. <a href="https://arxiv.org/abs/1503.02406" target="_blank" rel="noopener">(URL)</a></li>
+<li>[2] Shwartz-Ziv and Tishby (2017). Opening the Black Box of Deep Neural Networks via Information. <a href="https://arxiv.org/abs/1703.00810" target="_blank" rel="noopener">(URL)</a></li>
+</ul>
+<p>Information bottleneckでやりたいことを直感的に述べると、ある入力信号Xを圧縮するに当たって、別の信号Yの情報をなるべく喪失しないようにしつつ可能な限り小さく圧縮するというトレードオフを考えるというものであった。分類問題のように、特徴量Xを入力としてラベルYを予測したい状況を考えると、この思想に自然に行き着く。[1] では、DNNによる分類の挙動をIBの言葉で解析した場合に、どんなことが言えてほしいかという議論をしている（具体的な解析というより、解析方針の提言みたいな感じである）。IBの議論より、中間層表現をLとすると、入力Xの情報が中間層においてどの程度圧縮されているかは $I(X, L)$ がどの程度小さいかに対応している (厳密には違うけどrate distortion theoryを意識するとそう思うこともできる)。また、中間層LにおいてラベルYの情報がどの程度残存しているかは、$I(L, Y)$ がどの程度大きいかに対応している。そこで、DNNにおいてある時点での $I(X, L)$ と $I(Y, L)$ を縦軸と横軸にプロットすることによって、現在のDNNの状態がIBのトレードオフにおいてどの位置にあるかを可視化することができるでしょう、ということである。この図をinformation planeと呼んでいる。</p>
+<p>[2] は、[1] の提言に基づいて具体的な解析を行った初めての論文で、SGDのエポックを追うごとにinformation plane上ではどの位置にいるかを可視化した。主な主張として、information plane上で、SGDで訓練したDNNの典型的な挙動は下図のようになると言っている。 (この図は [4] から借りてきた。実際の実験を表したものではなく、概念図である。)</p>
+<img src="/blog/2020/03/28/20200328-information-plane/ip_ideal_geiger2020.png" title="Figure from https://arxiv.org/abs/2003.09671">
+<p>横軸が符号の大きさ (レート) に対応する $I(X, L)$ なので、左に行くほど圧縮率が高い。縦軸は $Y$ に関する情報の残存量であり、上に行くほど $Y$ に関する情報は多く保持している。よって直感的には、よい汎化のためには、「左上」のほうに向かうのが嬉しいということになる。[2] は、DNNをSGDで訓練するとき、次の2つのフェーズがあるということを主張している。</p>
+<ol>
+<li>初期のエポックはERMフェーズで、データに対してDNNをフィッティングさせることに費やされる。この間、圧縮率は上がらない ($I(X, L)$ が増える) ので、IP上では「右上」に向かっていく。</li>
+<li>十分に訓練誤差が下がった段階で、圧縮フェーズに移行する。圧縮フェーズでは、$Y$ に関する情報残存量 $I(Y, L)$ はあまり変えないが、中間表現 $L$ の余計な部分が削ぎ落とされて $I(X, L)$ は下がる。</li>
+</ol>
+<p>[2] では、tanh活性化関数をもつNNによる実験で、実際にこのような図を描いている。こういった実験を通して、この論文では次のような主張をしている。</p>
+<ul>
+<li>SGDによるNNの訓練では、ERMフェーズは相対的に短く、ほとんどのエポックは圧縮フェーズに費やされる</li>
+<li>SGDの軌道は、初期段階では訓練誤差を減らすべく速く遷移する (drift phase)。十分に訓練誤差が小さくなると、勾配はとても小さくなって、SGDのノイズに起因した拡散過程的な動きが支配的になる (diffusion phase)。Information plane上での圧縮は ($I(X, L)$ の減少はdiffusion phaseによって起こっている。(こういう感じのストーリーは、SGDをdiffusionとして解析する他の研究でも言われている気がする。<a href="https://arxiv.org/abs/1808.09642" target="_blank" rel="noopener">ICAの論文</a> とか)</li>
+<li>NNの隠れ層を増やすと、compressionが速くなって訓練が速くなる (必要なepoch数が減少する)</li>
+<li>DNNはIBの意味での限界に近いところに収束できる</li>
+</ul>
+<h2 id="批判"><a href="#批判" class="headerlink" title="批判"></a>批判</h2><p>これらの主張は、成り立つとすれば面白いが、一般のDNNの訓練で成り立つと結論づけてしまうには強すぎると思われた。で、このあたりのストーリーが果たして本当なのかについて、後続研究で議論が続いているように思われる。例えば、以下の [3] では、上の主張はどれも必ずしも成り立たないということを述べている。</p>
+<ul>
+<li>[3] Saxe et al. (2018). On the Information Bottleneck Theory of Deep Learning. <a href="https://openreview.net/forum?id=ry_WPG-A-" target="_blank" rel="noopener">(URL)</a></li>
+</ul>
+<p>[3] では、次のようなことが指摘されている。</p>
+<ul>
+<li>圧縮フェーズの存在はtanhのように両側がsaturateした活性化関数に特有の現象なのではないか？ 実際に、ReLU DNNにおいて実験してみるとcompression phaseのような挙動が見えなくなったり (IP上では一貫して右肩上がりになる)、linear networkに関してはcompression phaseがないことが示せる。</li>
+<li>圧縮フェーズのためにrandomness (diffusion phase) が必要とは限らない。Batch gradient descentでもcompression phaseのような挙動が見えることがある。</li>
+</ul>
+<p>[3] は論文だけでなくて、<a href="https://openreview.net/forum?id=ry_WPG-A-" target="_blank" rel="noopener">Openreview</a> 上で [2] の著者と直接議論が進められているので、そちらも眺めた。いずれにせよ [2] も [3] も何かを結論づけるにはまだ早いが、重要な議論であるので後続研究を続けよう、というのが [3] の採択理由でも述べられている。</p>
+<p>出力 $Y$ は分類問題においては離散変数であるが、入力 $X$ や中間層 $L$ は (計算機上で実装しているとはいえ) 連続変数とみるのが自然とも考えられる。実験では、相互情報量は厳密計算しているわけではなく、空間をbinに区切ったり、カーネル密度推定量ベースの推定量を使ったりして推定を行っている。実際、この推定量の選択が実験結果 (＝information plane上での挙動の違い) に影響しうるよね、ということがopenreviewでも議論されている。タイミングのいいことに、先週、相互情報量の推定量の選択にもフォーカスしたinformation planeのサーベイ論文が公開された。</p>
+<ul>
+<li>[4] Geiger (2020). On Information Plane Analyses of Neural Network Classifiers – A Review. <a href="https://arxiv.org/abs/2003.09671" target="_blank" rel="noopener">(URL)</a></li>
+</ul>
+<p>このサーベイ論文をみると、[3] 以降にもinformation planeの後続研究がたくさん出ていることがわかる。下の表が立派で、unpublished workも調べ上げて、(i) NNのアーキテクチャ (ii) 活性化関数の選択 (iii) 訓練アルゴリズム (iv) データセット (v) 相互情報量の推定手法の組み合わせに基づいて、compression phaseが観察されたかどうかについてまとめられている。</p>
+<img src="/blog/2020/03/28/20200328-information-plane/table_geiger2020.png" title="Table from https://arxiv.org/abs/2003.09671">
+<p>まとめると、information planeを利用した研究において、現状では [1] や [2] で期待されたようなストーリーが成り立っているとは言い切れない。一方、思想的には色々と面白い部分があるし、依然として可能性は感じるので、それなりの数の研究者が取り組んでいるのだと思う。</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>ちなみに、[4] に書いてあって、個人的に気になる文章はこちら:<br>Our analysis suggests that compression visualized in information planes is not information-theoretic, but is rather compatible with geometric compression of the activations.</p>
+<p>確かに、相互情報量ってgeometryの情報を陽に考慮した概念ではないので、完全にinformation-theoreticな議論にこだわらずに、幾何学的に何が起きてるのか考えるのは面白そう (もともと符号理論にしてもレート歪み理論にしても離散的なビット列のようなものに圧縮するための理論である)。相互情報量を推定するときにbinningやKDEを使うと、例えば近いセルをひとまとめにするという意味でgeometryの情報は暗に使っているのだが、そのへんの働きをクリアにしたいよねというのは思った。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2020-03-22T06:59:07.000Z"><a href="/blog/2020/03/22/20200322-information-bottleneck/">2020-03-22</a></time>
       
       
@@ -586,52 +656,6 @@
   </div>
 </article>
 
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-05-15T21:48:14.000Z"><a href="/blog/2016/05/16/201605-twoboys/">2016-05-16</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/blog/2016/05/16/201605-twoboys/">火曜日に生まれた男の子の話</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h1 id="Twitterで見かけた問題"><a href="#Twitterで見かけた問題" class="headerlink" title="Twitterで見かけた問題"></a>Twitterで見かけた問題</h1><p>先日、こんな問題を見かけました ([1], 元ツイートは2010年)。</p>
-<p><strong>“子どもが二人いる。（少なくとも）一人は男で火曜日に生まれた。二人とも男である確率は？（「火曜日に」を聞かなかった場合の確率も求めてください）”</strong></p>
-<p>条件つき確率の問題でして、個人的にはいい問題だなーと感じました。</p>
-<p>で、率直にいうと答えは</p>
-<ul>
-<li>「火曜日に」という情報を聞かなかった場合は 1/3</li>
-<li>「火曜日に」という情報を聞いた場合は 13/27 (=0.48148…)</li>
-</ul>
-<p>です。</p>
-<h1 id="図を見て3秒で理解する"><a href="#図を見て3秒で理解する" class="headerlink" title="図を見て3秒で理解する"></a>図を見て3秒で理解する</h1><p>ところが、とくに13/27という数字は、仮に条件つき確率の定義を知識として知っていたとしても、全く自明でない印象を受けてしまいます。<br>13とか27とかマジで？という感じ。</p>
-<p>実際に計算して確認しようとすると3分くらいかかるのですが、願わくばもっと短時間で、何が起きているのか理解したいです。3秒くらいで。</p>
-<p>というわけで、3秒で理解するための図を作りました。こちらです。</p>
-<img src="/blog/2016/05/16/201605-twoboys/twoboys_3.png" title="条件つき確率を3秒で理解する図">
-<p>図では、AさんとBさんの性別と誕生日の曜日をタテヨコに並べてあります。2人分の性別と誕生日の組み合わせなので、14 * 14 = 196マスあります。<br>今、「一方は火曜日に生まれた男である」という情報を聞いたので、そうでないマスを黒く塗りつぶすと27マスだけ残ります。その中で、二人とも男であるのは赤く塗った13マスなので、13/27という数字が出てきます。</p>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/blog/2016/05/16/201605-twoboys/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
 
 <nav id="pagination">
   
@@ -660,7 +684,7 @@
   
     <li><a href="/blog/categories/2018-3/">2018/3</a><small>4</small></li>
   
-    <li><a href="/blog/categories/2020-3/">2020/3</a><small>2</small></li>
+    <li><a href="/blog/categories/2020-3/">2020/3</a><small>3</small></li>
   
   </ul>
 </div>
@@ -677,13 +701,13 @@
   
     <li><a href="/blog/tags/TDD/">TDD</a><small>1</small></li>
   
-    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>3</small></li>
+    <li><a href="/blog/tags/個人用メモ/">個人用メモ</a><small>4</small></li>
   
     <li><a href="/blog/tags/勉強会/">勉強会</a><small>1</small></li>
   
     <li><a href="/blog/tags/学習理論/">学習理論</a><small>4</small></li>
   
-    <li><a href="/blog/tags/情報理論/">情報理論</a><small>1</small></li>
+    <li><a href="/blog/tags/情報理論/">情報理論</a><small>2</small></li>
   
     <li><a href="/blog/tags/数学/">数学</a><small>1</small></li>
   
@@ -693,7 +717,7 @@
   
     <li><a href="/blog/tags/最適輸送/">最適輸送</a><small>2</small></li>
   
-    <li><a href="/blog/tags/機械学習/">機械学習</a><small>6</small></li>
+    <li><a href="/blog/tags/機械学習/">機械学習</a><small>7</small></li>
   
     <li><a href="/blog/tags/深層学習/">深層学習</a><small>2</small></li>
   
